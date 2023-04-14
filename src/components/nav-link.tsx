@@ -14,9 +14,7 @@ export const ComposedReactAppNavLink = ({ link, title, lucideIcon, notification,
     <NavLink
       to={link}
       className={({ isActive, isPending }) =>
-        [`relative flex items-center p-3 hover:bg-zinc-200 rounded-lg gap-3 cursor-pointer `, isActive ? 'bg-zinc-200 rounded-lg gap-3' : ''].join(
-          ' '
-        )
+        [`relative flex items-center p-3 hover:text-cyan-500 gap-3 cursor-pointer `, isActive ? 'text-cyan-500' : ''].join(' ')
       }
     >
       <AppNavLinkIcon>{lucideIcon}</AppNavLinkIcon>
@@ -28,7 +26,10 @@ export const ComposedReactAppNavLink = ({ link, title, lucideIcon, notification,
     <NavLink
       to={link}
       className={({ isActive, isPending }) =>
-        [`flex items-center p-3 hover:bg-zinc-200 rounded-lg gap-3 `, isActive ? 'bg-zinc-200 rounded-lg gap-3' : ''].join(' ')
+        [
+          `flex items-center p-3 hover:bg-zinc-200 hover:text-cyan-500 rounded-lg gap-3 `,
+          isActive ? 'bg-zinc-200 text-cyan-500 rounded-lg gap-3' : '',
+        ].join(' ')
       }
     >
       <AppNavLinkIcon>{lucideIcon}</AppNavLinkIcon>

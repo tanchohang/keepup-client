@@ -44,8 +44,8 @@ const AuthLayout = () => {
 
   return (
     <div className="flex min-h-screen">
-      <div className=" flex flex-col justify-between border-r-[1px] max-w-[20%]">
-        <nav className="flex flex-col p-5 gap-3">
+      <div className={[`flex flex-col justify-between border-r-[1px] border-zinc-200`, hide ? 'max-w-[20%]' : 'w-[20%]'].join(' ')}>
+        <nav className="flex flex-col p-5 gap-3 w-[100%]">
           <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide={hide} />
           <ComposedReactAppNavLink title="Chat" link="chat" lucideIcon={<MessageCircle size={30} />} notification={9} hide={hide} />
           <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
