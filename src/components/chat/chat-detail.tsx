@@ -1,5 +1,6 @@
-import { Camera, Mic, MoreVertical, Phone, PlusCircle, Send, Video, VideoIcon, VideoOffIcon } from 'lucide-react';
-import { ChangeEvent, KeyboardEvent, MouseEvent, MouseEventHandler } from 'react';
+import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
+import { ChangeEvent, KeyboardEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface Props {}
 const ChatDetail = (props: Props) => {
@@ -17,10 +18,16 @@ const ChatDetail = (props: Props) => {
 };
 
 const ChatHeader = () => {
+  const router = useLocation();
+  const navigate = useNavigate();
   return (
-    <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500">
-      <div>
+    <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 text-white">
+      <div className="flex items-center gap-3">
+        <button onClick={() => navigate(-1)}>
+          <ChevronLeft size={40} />
+        </button>
         <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={40} />
+        <span className="text-lg font-semibold">Name here</span>
       </div>
       <div className="flex justify-center items-center gap-8">
         <button>

@@ -1,4 +1,4 @@
-import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation, useRoutes } from 'react-router-dom';
 import { Chat } from './pages/chat';
 import {
   Calendar,
@@ -13,6 +13,7 @@ import {
   User,
   UserCog,
   Users,
+  X,
 } from 'lucide-react';
 import { ComposedReactAppNavLink } from './components/nav-link';
 import { Activities } from './pages/activities';
@@ -33,7 +34,6 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
         <Route index element={<Login />} />
-        <Route path="chats" element={<Chat />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path=":id" element={<AuthLayout />}>
@@ -69,68 +69,83 @@ const Root = () => {
 
 const AuthLayout = () => {
   const [hide, setHide] = useState(false);
+  const router = useLocation();
 
   return (
-    <div className="flex flex-col-reverse justify-between md:flex-row min-h-screen">
-      {/* Displayed on mobile hidden in other screens */}
-      <nav className="flex md:hidden  w-full justify-around ">
-        <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} hide={hide} />
-        <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} hide={hide} />
-        <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide={hide} />
-        <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide={hide} />
-        <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} hide={hide} />
-      </nav>
-
-      {/* For medium screens */}
-      <nav className=" hidden md:flex lg:hidden flex-col md:justify-between md:border-r-[1px] border-zinc-200 min-w-fit">
-        <section className="flex  flex-col gap-3 p-5">
-          <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide />
-          <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} notification={9} hide />
-          <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide />
-          <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide />
-          <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} notification={2} hide />
-        </section>
-        <section className={`flex flex-col gap-3 p-5 `}>
-          <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} className="flex-shrink-0" />} hide />
-          <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide />
-        </section>
-      </nav>
-
-      {/* For Larger Screen */}
-      <nav className={`  hidden lg:flex flex-col justify-between border-r-[1px] border-zinc-200 min-w-fit`}>
-        <section className="flex flex-col gap-3 p-5">
-          <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide={hide} />
-          <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} notification={9} hide={hide} />
-          <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide={hide} />
-          <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide={hide} />
-          <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} notification={2} hide={hide} />
-        </section>
-
-        <section className={`flex flex-col gap-3 p-5 `}>
-          <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} className="flex-shrink-0" />} hide={hide} />
+    <div className="flex relative">
+      {!hide && (
+        <nav className={`flex md:hidden flex-col gap-3 bg-cyan-500 w-full h-screen absolute `}>
+          <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
           <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
-          <button
-            className={`${hide ? '' : 'flex flex-row-reverse'} hidden md:hidden lg:flex animate-pulse animate-bounce text-amber-500`}
-            onClick={() => setHide(!hide)}
-          >
-            {hide ? <ChevronRightSquareIcon size={40} /> : <ChevronLeftSquareIcon size={40} />}
-          </button>
-        </section>
-      </nav>
+        </nav>
+      )}
+      <div className="flex flex-col-reverse justify-between md:flex-row min-h-screen w-full">
+        {/* Displayed on mobile hidden in other screens */}
+        {router.pathname !== '/id/chats/id' && (
+          <nav className="flex md:hidden  w-full justify-around ">
+            <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} />
+            <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} />
+            <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} />
+            <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} />
+            <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} />
+          </nav>
+        )}
+        {/* For medium screens */}
+        <nav className=" hidden md:flex lg:hidden flex-col md:justify-between md:border-r-[1px] border-zinc-200 min-w-fit">
+          <section className="flex  flex-col gap-3 p-5">
+            <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide />
+            <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} notification={9} hide />
+            <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide />
+            <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide />
+            <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} notification={2} hide />
+          </section>
+          <section className={`flex flex-col gap-3 p-5 `}>
+            <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide />
+            <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide />
+          </section>
+        </nav>
+        {/* For Larger Screen */}
+        <nav className={`  hidden lg:flex flex-col justify-between border-r-[1px] border-zinc-200 min-w-fit`}>
+          <section className="flex flex-col gap-3 p-5">
+            <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide={hide} />
+            <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} notification={9} hide={hide} />
+            <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide={hide} />
+            <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide={hide} />
+            <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} notification={2} hide={hide} />
+          </section>
+          <section className={`flex flex-col gap-3 p-5 `}>
+            <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} className="flex-shrink-0" />} hide={hide} />
+            <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
+            <button
+              className={`${
+                hide ? 'absolute right-0' : 'flex flex-row-reverse'
+              } hidden md:hidden lg:flex animate-pulse animate-bounce text-amber-500 `}
+              onClick={() => setHide(!hide)}
+            >
+              {hide ? <ChevronRightSquareIcon size={40} /> : <ChevronLeftSquareIcon size={40} />}
+            </button>
+          </section>
+        </nav>
 
-      <div>
-        <header className="flex md:hidden justify-between px-5">
-          <button onClick={() => setHide(!hide)}>
-            <Menu />
-          </button>
-          <h4 className="">Title</h4>
-          <button>
-            <PlusSquare size={40} className="fill-cyan-500 text-white" />
-          </button>
-        </header>
-        <section className="w-[100%]">
-          <Outlet />
-        </section>
+        <div>
+          {router.pathname !== '/id/chats/id' && (
+            <header className="flex md:hidden justify-between px-5 ">
+              <button
+                onClick={() => setHide(!hide)}
+                className={`${hide ? '' : 'z-50 absolute right-5 top-3 text-red-500'} transition-colors ease-linear duration-5000`}
+              >
+                {hide ? <Menu /> : <X size={30} />}
+              </button>
+              <h4 className="">Title</h4>
+              <button>
+                <PlusSquare size={40} className="fill-cyan-500 text-white" />
+              </button>
+            </header>
+          )}
+          <section className="w-[100%]">
+            <Outlet />
+          </section>
+        </div>
       </div>
     </div>
   );
