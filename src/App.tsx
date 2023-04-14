@@ -67,7 +67,7 @@ const AuthLayout = () => {
         <section className="flex flex-col gap-3 p-5">
           <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
           <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
-          <button className="flex flex-row-reverse animate-pulse animate-bounce text-amber-500" onClick={() => setHide(!hide)}>
+          <button className={`${hide ? '' : 'flex flex-row-reverse'} animate-pulse animate-bounce text-amber-500`} onClick={() => setHide(!hide)}>
             {hide ? <ChevronRightSquareIcon size={40} /> : <ChevronLeftSquareIcon size={40} />}
           </button>
         </section>
