@@ -73,12 +73,15 @@ const AuthLayout = () => {
 
   return (
     <div className="flex relative">
+      {/* Sidenave for small screens */}
+
       {!hide && (
         <nav className={`flex md:hidden flex-col gap-3 bg-cyan-500 w-full h-screen absolute `}>
           <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
           <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
         </nav>
       )}
+
       <div className="flex flex-col-reverse justify-between md:flex-row min-h-screen w-full">
         {/* Displayed on mobile hidden in other screens */}
         {router.pathname !== '/id/chats/id' && (
@@ -118,7 +121,7 @@ const AuthLayout = () => {
             <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
             <button
               className={`${
-                hide ? 'absolute right-0' : 'flex flex-row-reverse'
+                hide ? 'flex justify-center' : 'flex flex-row-reverse'
               } hidden md:hidden lg:flex animate-pulse animate-bounce text-amber-500 `}
               onClick={() => setHide(!hide)}
             >
@@ -127,6 +130,7 @@ const AuthLayout = () => {
           </section>
         </nav>
 
+        {/* AuthLayout header */}
         <div>
           {router.pathname !== '/id/chats/id' && (
             <header className="flex md:hidden justify-between px-5 ">
