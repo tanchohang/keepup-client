@@ -33,7 +33,7 @@ export const ComposedReactAppNavLink = ({ link, title, lucideIcon, notification,
       }
     >
       <AppNavLinkIcon>{lucideIcon}</AppNavLinkIcon>
-      <div className="flex justify-between w-full gap-14">
+      <div className="md:flex hidden justify-between w-full gap-14">
         <AppNavLinkTitle name={title} />
         {notification && <AppNavLinkNotificationBadge notification={notification} />}
       </div>

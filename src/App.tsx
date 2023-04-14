@@ -1,6 +1,19 @@
 import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { Chat } from './pages/chat';
-import { Calendar, ChevronLeftSquareIcon, ChevronRightSquareIcon, Cog, LogIn, MessageCircle, Newspaper, User, UserCog, Users } from 'lucide-react';
+import {
+  Calendar,
+  ChevronLeftSquareIcon,
+  ChevronRightSquareIcon,
+  Cog,
+  LogIn,
+  Menu,
+  MessageCircle,
+  Newspaper,
+  PlusSquare,
+  User,
+  UserCog,
+  Users,
+} from 'lucide-react';
 import { ComposedReactAppNavLink } from './components/nav-link';
 import { Activities } from './pages/activities';
 import { Setting } from './pages/setting';
@@ -12,6 +25,8 @@ import { Signup } from './pages/signup';
 import { Friends } from './pages/friends';
 import { Account } from './pages/account';
 import { Event } from './pages/events';
+import { ChatDetail } from './components/chat/chat-detail';
+import { ChatList } from './components/chat/chat-list';
 
 function App() {
   const router = createBrowserRouter(
@@ -21,16 +36,18 @@ function App() {
         <Route path="chats" element={<Chat />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
-
         <Route path=":id" element={<AuthLayout />}>
-          <Route index path="activities" element={<Activities />} />
-          <Route path="chats" element={<Chat />} />
+          <Route index element={<Activities />} />
+          <Route path="activities" element={<Activities />} />
           <Route path="friends" element={<Friends />} />
           <Route path="account" element={<Account />} />
           <Route path="events" element={<Event />} />
-
           <Route path="profile" element={<Profile />} />
           <Route path="setting" element={<Setting />} />
+          <Route path="chats" element={<ChatLayout />}>
+            <Route index element={<ChatList />} />
+            <Route path=":id" element={<ChatDetail />} />
+          </Route>
         </Route>
       </Route>
     )
@@ -54,8 +71,33 @@ const AuthLayout = () => {
   const [hide, setHide] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
-      <nav className={`flex flex-col justify-between border-r-[1px] border-zinc-200  ${hide ? 'max-w-[20%]' : 'w-[20%]'} `}>
+    <div className="flex flex-col-reverse justify-between md:flex-row min-h-screen">
+      {/* Displayed on mobile hidden in other screens */}
+      <nav className="flex md:hidden  w-full justify-around ">
+        <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} hide={hide} />
+        <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} hide={hide} />
+        <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide={hide} />
+        <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide={hide} />
+        <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} hide={hide} />
+      </nav>
+
+      {/* For medium screens */}
+      <nav className=" hidden md:flex lg:hidden flex-col md:justify-between md:border-r-[1px] border-zinc-200 min-w-fit">
+        <section className="flex  flex-col gap-3 p-5">
+          <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide />
+          <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} notification={9} hide />
+          <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide />
+          <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide />
+          <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} notification={2} hide />
+        </section>
+        <section className={`flex flex-col gap-3 p-5 `}>
+          <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} className="flex-shrink-0" />} hide />
+          <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide />
+        </section>
+      </nav>
+
+      {/* For Larger Screen */}
+      <nav className={`  hidden lg:flex flex-col justify-between border-r-[1px] border-zinc-200 min-w-fit`}>
         <section className="flex flex-col gap-3 p-5">
           <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} notification={10} hide={hide} />
           <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} notification={9} hide={hide} />
@@ -64,18 +106,48 @@ const AuthLayout = () => {
           <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} notification={2} hide={hide} />
         </section>
 
-        <section className="flex flex-col gap-3 p-5">
-          <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
+        <section className={`flex flex-col gap-3 p-5 `}>
+          <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} className="flex-shrink-0" />} hide={hide} />
           <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
-          <button className={`${hide ? '' : 'flex flex-row-reverse'} animate-pulse animate-bounce text-amber-500`} onClick={() => setHide(!hide)}>
+          <button
+            className={`${hide ? '' : 'flex flex-row-reverse'} hidden md:hidden lg:flex animate-pulse animate-bounce text-amber-500`}
+            onClick={() => setHide(!hide)}
+          >
             {hide ? <ChevronRightSquareIcon size={40} /> : <ChevronLeftSquareIcon size={40} />}
           </button>
         </section>
       </nav>
 
-      <section className="w-[100%]">
+      <div>
+        <header className="flex md:hidden justify-between px-5">
+          <button onClick={() => setHide(!hide)}>
+            <Menu />
+          </button>
+          <h4 className="">Title</h4>
+          <button>
+            <PlusSquare size={40} className="fill-cyan-500 text-white" />
+          </button>
+        </header>
+        <section className="w-[100%]">
+          <Outlet />
+        </section>
+      </div>
+    </div>
+  );
+};
+
+const ChatLayout = () => {
+  return (
+    <div className="flex ">
+      <div className="hidden md:block border-r-[1px] border-zinc-200 w-full md:max-w-xs lg:max-w-md  px-5">
+        <ChatList />
+      </div>
+      <div className="w-[100%] hidden md:block">
+        <ChatDetail />
+      </div>
+      <div className="md:hidden w-full">
         <Outlet />
-      </section>
+      </div>
     </div>
   );
 };
