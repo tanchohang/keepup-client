@@ -20,7 +20,7 @@ const ChatDetail = (props: Props) => {
 const ChatHeader = () => {
   const navigate = useNavigate();
   return (
-    <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 text-white">
+    <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">
         <button onClick={() => navigate(-1)}>
           <ChevronLeft size={40} />
