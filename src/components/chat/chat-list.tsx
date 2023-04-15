@@ -14,7 +14,11 @@ const ChatList = (props: Props) => {
 
       <div className="p-5">
         <header className="flex w-full pb-5">
-          <input type="text" placeholder="Search" className="text-lg p-1 px-3 rounded-full focus:outline-cyan-500 border border-zinc-200 w-full" />
+          <input
+            type="text"
+            placeholder="Search"
+            className="text-lg p-1 px-3 rounded-full focus:outline-cyan-500 border border-zinc-200 w-full text-black"
+          />
         </header>
         <div>
           <Link to={'id'} className="flex gap-3" onClick={() => console.log('party clicked')}>

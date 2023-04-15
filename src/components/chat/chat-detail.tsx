@@ -18,7 +18,6 @@ const ChatDetail = (props: Props) => {
 };
 
 const ChatHeader = () => {
-  const router = useLocation();
   const navigate = useNavigate();
   return (
     <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 text-white">
