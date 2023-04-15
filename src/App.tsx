@@ -72,7 +72,7 @@ const AuthLayout = () => {
   const router = useLocation();
 
   return (
-    <div className="flex relative">
+    <div className="flex relative dark:bg-slate-800 dark:text-white">
       {/* Sidenave for small screens */}
 
       {!hide && (
