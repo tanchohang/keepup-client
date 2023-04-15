@@ -76,7 +76,7 @@ const AuthLayout = () => {
       {/* Sidenave for small screens */}
 
       {!hide && (
-        <nav className={`flex md:hidden flex-col gap-3 bg-cyan-500 w-full h-screen absolute `}>
+        <nav className={`flex md:hidden flex-col gap-3 bg-cyan-500 dark:bg-cyan-950 w-full h-screen absolute `}>
           <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
           <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
         </nav>
