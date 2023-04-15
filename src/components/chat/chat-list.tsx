@@ -21,7 +21,11 @@ const ChatList = (props: Props) => {
           />
         </header>
         <div>
-          <Link to={'id'} className="flex gap-3" onClick={() => console.log('party clicked')}>
+          <Link
+            to={'id'}
+            className="flex gap-3 hover:bg-zinc-100 dark:bg-slate-700/50 dark:hover:bg-slate-700/75 rounded-3xl p-5"
+            onClick={() => console.log('party clicked')}
+          >
             <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={50} />
             <p className="flex flex-col">
               <span className="font-semibold">name of circle</span>
