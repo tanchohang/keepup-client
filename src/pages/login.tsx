@@ -1,18 +1,32 @@
 import { Lock, User } from 'lucide-react';
+import { BaseSyntheticEvent } from 'react';
+import { FieldValues, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  function submitHandler(data: FieldValues): void {
+    console.log(data);
+  }
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-cyan-500 text-base md:text-lg font-normal md:font-semibold">
-      <form className="flex flex-col gap-8 w-[80%] md:w-[30%]">
-        <div className="bg-red-200 text-red-600 p-4 ml-10 rounded-sm text-xs">
-          <p>! Username or Password is wrong</p>
-          type="text"
-        </div>
+      <form className="flex flex-col gap-8 w-[80%] md:w-[30%]" onSubmit={handleSubmit(submitHandler)}>
+        {Object.keys(errors).length > 0 && (
+          <div className="bg-red-200 text-red-600 p-4 ml-10 rounded-sm text-xs">
+            <p>{errors.username && <span>Username is required</span>}</p>
+            <p>{errors.password && <span>Password is required</span>}</p>
+          </div>
+        )}
         <label className="flex gap-5  items-center ">
           <User className="stroke-white" />
           <input
-            name="username"
+            {...register('username', { required: true })}
             placeholder="Username"
             className="text-lg sm:text-base p-3 text-cyan-500  focus:outline-cyan-500 rounded-lg w-[100%]"
           />
@@ -21,7 +35,7 @@ const Login = () => {
           <Lock className="stroke-white" />
           <input
             type="password"
-            name="password"
+            {...register('password', { required: true })}
             placeholder="Password"
             className="text-lg sm:text-base p-3 text-cyan-500  focus:outline-cyan-500 rounded-lg w-[100%]"
           />
