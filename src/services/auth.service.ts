@@ -1,6 +1,7 @@
-import { keepupApi, loginEndpoint } from './endpoints';
+import { keepupApiAxiosInstance, authEndpoint } from '../utils/axios';
 
 export const login = async (username: string, password: string) => {
-  const response = await keepupApi.post(loginEndpoint, { username, password });
+  const response = await keepupApiAxiosInstance(authEndpoint).post('/login', { username, password });
+
   return response;
 };
