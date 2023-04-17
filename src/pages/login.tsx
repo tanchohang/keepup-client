@@ -1,7 +1,9 @@
 import { Lock, User } from 'lucide-react';
-import { BaseSyntheticEvent } from 'react';
+
 import { FieldValues, useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { login } from '../services/auth.service';
+import useAuth, { User as UserType } from '../context/auth.context';
 
 const Login = () => {
   const {
@@ -9,9 +11,27 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const { auth, setAuth } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  function submitHandler(data: FieldValues): void {
-    console.log(data);
+  async function submitHandler(data: FieldValues): Promise<void> {
+    const { username, password } = data;
+    const { data: resData } = await login(username, password);
+
+    const user: UserType = {
+      id: resData.id,
+      email: resData.email,
+      username: resData.username,
+      fullname: resData.fullname,
+      access_token: resData.access_token,
+    };
+    console.log(user);
+    setAuth(user);
+    console.log(auth);
+    if (location.state.from) {
+      navigate(location.state.from.pathname || '/', { replace: true });
+    }
   }
 
   return (
