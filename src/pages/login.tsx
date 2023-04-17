@@ -26,11 +26,11 @@ const Login = () => {
       fullname: resData.fullname,
       access_token: resData.access_token,
     };
-    console.log(user);
+
     setAuth(user);
-    console.log(auth);
+
     if (location.state.from) {
-      navigate(location.state.from.pathname || '/', { replace: true });
+      navigate(location.state?.from?.pathname || '/', { replace: true });
     }
   }
 
