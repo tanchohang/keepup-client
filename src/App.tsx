@@ -1,4 +1,4 @@
-import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation, useRoutes } from 'react-router-dom';
+import { Navigate, Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation, useRoutes } from 'react-router-dom';
 import { Chat } from './pages/chat';
 import {
   Calendar,
@@ -28,25 +28,33 @@ import { Account } from './pages/account';
 import { Event } from './pages/events';
 import { ChatDetail } from './components/chat/chat-detail';
 import { ChatList } from './components/chat/chat-list';
+import RequireAuth from './components/require-auth';
+import UnAuthorized from './components/unauthorised';
 
 function App() {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
-        <Route index element={<Login />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
+        <Route index element={<Navigate to={'/login'} replace />} />
+
+        <Route element={<UnAuthorized />}>
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+        </Route>
+
         <Route path=":id" element={<AuthLayout />}>
-          <Route index element={<Activities />} />
-          <Route path="activities" element={<Activities />} />
-          <Route path="friends" element={<Friends />} />
-          <Route path="account" element={<Account />} />
-          <Route path="events" element={<Event />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="setting" element={<Setting />} />
-          <Route path="chats" element={<ChatLayout />}>
-            <Route index element={<ChatList />} />
-            <Route path=":id" element={<ChatDetail />} />
+          <Route element={<RequireAuth />}>
+            <Route index element={<Activities />} />
+            <Route path="activities" element={<Activities />} />
+            <Route path="friends" element={<Friends />} />
+            <Route path="account" element={<Account />} />
+            <Route path="events" element={<Event />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="setting" element={<Setting />} />
+            <Route path="chats" element={<ChatLayout />}>
+              <Route index element={<ChatList />} />
+              <Route path=":id" element={<ChatDetail />} />
+            </Route>
           </Route>
         </Route>
       </Route>
@@ -70,6 +78,9 @@ const Root = () => {
 const AuthLayout = () => {
   const [hide, setHide] = useState(false);
   const router = useLocation();
+  const path = router.pathname.match(/.+\/chats\/.+/);
+  const username = path?.[0]?.split('/')[1];
+  const chatid = path?.[0]?.split('/')[4];
 
   return (
     <div className="flex relative dark:bg-slate-800 dark:text-white">
@@ -84,7 +95,7 @@ const AuthLayout = () => {
 
       <div className="flex flex-col-reverse justify-between md:flex-row min-h-screen w-full">
         {/* Displayed on mobile hidden in other screens */}
-        {router.pathname !== '/id/chats/id' && (
+        {path && (
           <nav className="flex md:hidden  w-full justify-around ">
             <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} />
             <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} />
@@ -132,7 +143,7 @@ const AuthLayout = () => {
 
         {/* AuthLayout header */}
         <div>
-          {router.pathname !== '/id/chats/id' && (
+          {path && (
             <header className="flex md:hidden justify-between px-5 ">
               <button
                 onClick={() => setHide(!hide)}
