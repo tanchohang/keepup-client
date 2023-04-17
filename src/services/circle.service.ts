@@ -1,4 +1,4 @@
-import { circlesEndpoint, keepupApi } from './endpoints';
+import { circlesEndpoint, keepupApi } from '../utils/axios';
 
 export const createCircle = async (uid: string) => {
   const response = await keepupApi.post(circlesEndpoint, { users: [uid] });
