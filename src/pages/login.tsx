@@ -3,7 +3,7 @@ import { Lock, User } from 'lucide-react';
 import { FieldValues, useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { login } from '../services/auth.service';
-import useAuth, { User as UserType } from '../context/auth.context';
+import useAuth, { AuthUser as UserType } from '../context/auth.context';
 
 const Login = () => {
   const {
@@ -11,10 +11,9 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { auth, setAuth } = useAuth();
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
   async function submitHandler(data: FieldValues): Promise<void> {
     const { username, password } = data;
     const { data: resData } = await login(username, password);

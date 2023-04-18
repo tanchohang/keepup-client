@@ -1,7 +1,7 @@
 import { FieldValues, useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { createUser } from '../services/user.service';
-import useAuth, { User } from '../context/auth.context';
+import useAuth, { AuthUser } from '../context/auth.context';
 import axios, { AxiosError } from 'axios';
 import { useState } from 'react';
 
@@ -18,7 +18,7 @@ const Signup = () => {
 
   async function submitHandler(data: FieldValues) {
     try {
-      const { data: resData } = await createUser(data as User);
+      const { data: resData } = await createUser(data as AuthUser);
       if (resData) {
         setAuth({ username: resData.username, fullname: resData.fullname, email: resData.email, access_token: resData.access_token, id: resData.id });
       }

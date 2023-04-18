@@ -1,5 +1,4 @@
 import { Navigate, Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation, useRoutes } from 'react-router-dom';
-import { Chat } from './pages/chat';
 import {
   Calendar,
   ChevronLeftSquareIcon,

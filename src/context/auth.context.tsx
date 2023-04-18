@@ -1,6 +1,6 @@
 import { Dispatch, DispatchWithoutAction, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
-export type User = {
+export type AuthUser = {
   username: string;
   fullname: string;
   id: string;
@@ -9,8 +9,8 @@ export type User = {
 };
 
 interface AuthContextType {
-  auth: User | null;
-  setAuth: Dispatch<SetStateAction<User | null>>;
+  auth: AuthUser | null;
+  setAuth: Dispatch<SetStateAction<AuthUser | null>>;
 }
 
 const initialState: AuthContextType = {
@@ -21,7 +21,7 @@ const initialState: AuthContextType = {
 const AuthContext = createContext<AuthContextType>(initialState);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [auth, setAuth] = useState<User | null>(null);
+  const [auth, setAuth] = useState<AuthUser | null>(null);
 
   return <AuthContext.Provider value={{ auth, setAuth }}>{children}</AuthContext.Provider>;
 };
