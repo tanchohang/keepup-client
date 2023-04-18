@@ -1,10 +1,9 @@
-import { Navigate, Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation, useRoutes } from 'react-router-dom';
+import { Navigate, Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements, useLocation } from 'react-router-dom';
 import {
   Calendar,
   ChevronLeftSquareIcon,
   ChevronRightSquareIcon,
   Cog,
-  LogIn,
   Menu,
   MessageCircle,
   Newspaper,
@@ -18,8 +17,6 @@ import { ComposedReactAppNavLink } from './components/nav-link';
 import { Activities } from './pages/activities';
 import { Setting } from './pages/setting';
 import { Profile } from './pages/profile';
-import { Home } from './pages/home';
-import { useState } from 'react';
 import { Login } from './pages/login';
 import { Signup } from './pages/signup';
 import { Friends } from './pages/friends';
@@ -30,6 +27,7 @@ import { ChatList } from './components/chat/chat-list';
 import RequireAuth from './components/require-auth';
 import UnAuthorized from './components/unauthorised';
 import { ChatContextProvider } from './context/chat.context';
+import { useState } from 'react';
 
 function App() {
   const router = createBrowserRouter(
@@ -80,7 +78,6 @@ const AuthLayout = () => {
   const router = useLocation();
   const path = router.pathname.match(/.+\/chats\/.+/);
   const username = path?.[0]?.split('/')[1];
-  const chatid = path?.[0]?.split('/')[4];
 
   return (
     <div className="flex relative dark:bg-slate-800 dark:text-white">
@@ -90,6 +87,12 @@ const AuthLayout = () => {
         <nav className={`flex md:hidden flex-col gap-3 bg-cyan-500 dark:bg-cyan-950 w-full h-screen absolute `}>
           <ComposedReactAppNavLink title="Profile" link="profile" lucideIcon={<UserCog size={30} />} hide={hide} />
           <ComposedReactAppNavLink title="Setting" link="setting" lucideIcon={<Cog size={30} />} hide={hide} />
+          {/* <button
+            onClick={() => setHide(!hide)}
+            className={`${hide ? '' : '-z-50 absolute right-5 top-3 text-red-500'} transition-colors ease-linear duration-5000`}
+          >
+            {hide ? <Menu /> : <X size={30} />}
+          </button> */}
         </nav>
       )}
 
@@ -147,7 +150,7 @@ const AuthLayout = () => {
             <header className="flex md:hidden justify-between px-5 ">
               <button
                 onClick={() => setHide(!hide)}
-                className={`${hide ? '' : 'z-50 absolute right-5 top-3 text-red-500'} transition-colors ease-linear duration-5000`}
+                className={`${hide ? '' : '-z-50 absolute right-5 top-3 text-red-500'} transition-colors ease-linear duration-5000`}
               >
                 {hide ? <Menu /> : <X size={30} />}
               </button>
@@ -168,19 +171,13 @@ const AuthLayout = () => {
 
 const ChatLayout = () => {
   return (
-    <ChatContextProvider>
-      <div className="flex ">
-        <div className="hidden md:block border-r-[1px] border-zinc-200 w-full md:max-w-xs lg:max-w-md  px-5">
-          <ChatList />
-        </div>
-        <div className="w-[100%] hidden md:block">
-          <ChatDetail />
-        </div>
-        <div className="md:hidden w-full">
-          <Outlet />
-        </div>
-      </div>
-    </ChatContextProvider>
+    <>
+      <span>Heading</span>
+      {/* <ChatContextProvider> */}
+      {/* <ChatLayout /> */}
+      {/* </ChatContextProvider> */}
+      <Outlet />
+    </>
   );
 };
 
