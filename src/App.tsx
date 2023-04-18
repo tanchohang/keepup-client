@@ -29,6 +29,7 @@ import { ChatDetail } from './components/chat/chat-detail';
 import { ChatList } from './components/chat/chat-list';
 import RequireAuth from './components/require-auth';
 import UnAuthorized from './components/unauthorised';
+import { ChatContextProvider } from './context/chat.context';
 
 function App() {
   const router = createBrowserRouter(
@@ -167,17 +168,19 @@ const AuthLayout = () => {
 
 const ChatLayout = () => {
   return (
-    <div className="flex ">
-      <div className="hidden md:block border-r-[1px] border-zinc-200 w-full md:max-w-xs lg:max-w-md  px-5">
-        <ChatList />
+    <ChatContextProvider>
+      <div className="flex ">
+        <div className="hidden md:block border-r-[1px] border-zinc-200 w-full md:max-w-xs lg:max-w-md  px-5">
+          <ChatList />
+        </div>
+        <div className="w-[100%] hidden md:block">
+          <ChatDetail />
+        </div>
+        <div className="md:hidden w-full">
+          <Outlet />
+        </div>
       </div>
-      <div className="w-[100%] hidden md:block">
-        <ChatDetail />
-      </div>
-      <div className="md:hidden w-full">
-        <Outlet />
-      </div>
-    </div>
+    </ChatContextProvider>
   );
 };
 
