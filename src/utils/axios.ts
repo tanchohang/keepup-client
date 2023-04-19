@@ -7,7 +7,7 @@ export const usersEndpoint = 'users';
 export const circlesEndpoint = 'circles';
 export const partiesEndpoint = 'parties';
 export const chatEndpoint = 'chats';
-export const messageEndpoint = 'messages';
+export const messagesEndpoint = 'messages';
 
 export const keepupApiAxiosInstance = (endpoint: string) =>
   axios.create({

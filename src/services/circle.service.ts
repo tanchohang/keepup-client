@@ -1,12 +1,12 @@
 import { circlesEndpoint, keepupApiAxiosInstance } from '../utils/axios';
 
-export const createCircle = async (uid: string) => {
-  const response = await keepupApiAxiosInstance(circlesEndpoint).post('/', { users: [uid] });
+export const createCircle = async () => {
+  const response = await keepupApiAxiosInstance(circlesEndpoint).post('/');
   return response;
 };
 
 export const readAllCircle = async () => {
-  const response = await keepupApiAxiosInstance(circlesEndpoint).get('/');
+  const response = await keepupApiAxiosInstance(circlesEndpoint).get('/creator');
   return response;
 };
 
@@ -25,12 +25,12 @@ export const deleteCircle = async (id: string) => {
   return response;
 };
 
-export const addFriend = async (uid: string) => {
+export const addToCircle = async (uid: string) => {
   const response = await keepupApiAxiosInstance(circlesEndpoint).post(uid, { user: uid });
   return response;
 };
 
-export const removeFriend = async (uid: string) => {
+export const removeFromCircle = async (uid: string) => {
   const response = await keepupApiAxiosInstance(circlesEndpoint).post(uid, { user: uid });
   return response;
 };
