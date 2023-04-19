@@ -1,18 +1,13 @@
-import { PlusSquare } from 'lucide-react';
+import { Menu, PlusSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-interface Props {}
-const ChatList = (props: Props) => {
+interface Props {
+  openDetail: (id: string) => void;
+}
+const ChatList = ({ openDetail }: Props) => {
   return (
     <>
-      <header className=" hidden md:flex justify-between ">
-        <h4>Chat List</h4>
-        <button className=" hover:shadow-lg">
-          <PlusSquare size={40} className="fill-cyan-500 text-white" />
-        </button>
-      </header>
-
-      <div className="p-5">
+      <div className="p-5 md:border-r md:border-zinc-100 min-h-full">
         <header className="flex w-full pb-5">
           <input
             type="text"
@@ -21,20 +16,20 @@ const ChatList = (props: Props) => {
           />
         </header>
         <div>
-          <Link
-            to={'id'}
+          <button
             className="flex gap-3 hover:bg-zinc-100 dark:bg-slate-700/50 dark:hover:bg-slate-700/75 rounded-3xl p-5"
-            onClick={() => console.log('party clicked')}
+            onClick={() => openDetail('pid')}
           >
             <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={50} />
             <p className="flex flex-col">
               <span className="font-semibold">name of circle</span>
               <span className="font-light">You: subtext goes here. 5d</span>
             </p>
-          </Link>
+          </button>
         </div>
       </div>
     </>
   );
 };
+
 export { ChatList };

@@ -1,12 +1,13 @@
 import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
 import { ChangeEvent, KeyboardEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 
-interface Props {}
-const ChatDetail = (props: Props) => {
+interface Props {
+  clearParty?: () => void;
+}
+const ChatDetail = ({ clearParty }: Props) => {
   return (
     <div className="flex flex-col h-[100vh]">
-      <ChatHeader />
+      <ChatHeader clearParty={clearParty} />
 
       <section className="flex flex-col h-[93%]">
         <ChatBody />
@@ -17,12 +18,11 @@ const ChatDetail = (props: Props) => {
   );
 };
 
-const ChatHeader = () => {
-  const navigate = useNavigate();
+const ChatHeader = ({ clearParty }: Props) => {
   return (
     <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)}>
+        <button onClick={clearParty}>
           <ChevronLeft size={40} />
         </button>
         <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={40} />

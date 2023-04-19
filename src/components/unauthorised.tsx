@@ -4,6 +4,6 @@ import useAuth from '../context/auth.context';
 const UnAuthorized = () => {
   const { auth } = useAuth();
 
-  return auth ? <Navigate to={`${auth.username}/chats`} replace /> : <Outlet />;
+  return auth ? <Navigate to={`${auth.username}`} replace /> : <Outlet />;
 };
 export default UnAuthorized;

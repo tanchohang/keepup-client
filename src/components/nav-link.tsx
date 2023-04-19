@@ -27,7 +27,7 @@ export const ComposedReactAppNavLink = ({ link, title, lucideIcon, notification,
       to={link}
       className={({ isActive, isPending }) =>
         [
-          `flex items-center p-3 hover:bg-zinc-200 hover:text-cyan-500 rounded-lg gap-3 `,
+          `flex items-center p-3 hover:bg-zinc-200 hover:text-cyan-500 rounded-lg lg:w-[200px] gap-5`,
           isActive ? 'bg-zinc-200 text-cyan-500 rounded-lg gap-3' : '',
         ].join(' ')
       }
