@@ -1,4 +1,4 @@
-import { messagesEndpoint, keepupApiAxiosInstance } from '../utils/axios';
+import { keepupApiAxiosInstance, messagesEndpoint } from '../utils/axios';
 
 export const createMessage = async () => {
   const response = await keepupApiAxiosInstance(messagesEndpoint).post('/');

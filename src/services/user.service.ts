@@ -1,5 +1,5 @@
-import { User } from '../context/auth.context';
-import { usersEndpoint, keepupApiAxiosInstance } from '../utils/axios';
+import { User } from '../reducers/user.reducer';
+import { keepupApiAxiosInstance, usersEndpoint } from '../utils/axios';
 
 export const createUser = async (user: User) => {
   const response = await keepupApiAxiosInstance(usersEndpoint).post('/', user);

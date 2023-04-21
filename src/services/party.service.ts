@@ -1,4 +1,4 @@
-import { partiesEndpoint, keepupApiAxiosInstance } from '../utils/axios';
+import { keepupApiAxiosInstance, partiesEndpoint } from '../utils/axios';
 
 export const createParty = async () => {
   const response = await keepupApiAxiosInstance(partiesEndpoint).post('/');
