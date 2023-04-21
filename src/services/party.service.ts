@@ -6,7 +6,7 @@ export const createParty = async () => {
 };
 
 export const readAllParty = async () => {
-  const response = await keepupApiAxiosInstance(partiesEndpoint).get('/creator');
+  const response = await keepupApiAxiosInstance(partiesEndpoint).get('/');
   return response;
 };
 

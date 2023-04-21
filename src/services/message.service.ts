@@ -6,7 +6,7 @@ export const createMessage = async () => {
 };
 
 export const readAllMessage = async () => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).get('/creator');
+  const response = await keepupApiAxiosInstance(messagesEndpoint).get('/');
   return response;
 };
 
