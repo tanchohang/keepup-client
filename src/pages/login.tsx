@@ -15,6 +15,7 @@ const Login = () => {
   const { setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
   async function submitHandler(data: FieldValues): Promise<void> {
     const { username, password } = data;
     const { data: resData } = await login(username, password);
@@ -30,7 +31,7 @@ const Login = () => {
 
       setAuth(user);
       localStorage.setItem('token', resData.refresh_token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${resData.access_token}`;
+      sessionStorage.setItem('accessToken', resData.access_token);
 
       if (location.state.from) {
         navigate(location.state?.from?.pathname || '/', { replace: true });
