@@ -11,28 +11,28 @@ import { Party, PartyActionEmun } from '../reducers/party.reducer';
 import { Message, MessageActionEmun } from '../reducers/message.reducer';
 import { useChatContext } from '../context/chat.context';
 import { Menu, PlusSquare } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {}
 const Chat = (props: Props) => {
   const [selectedParty, setSelectedParty] = useState<string>();
-
   const { dispatch } = useChatContext();
 
   const { data: circlesRes, isLoading: circlesLoading, error: circlesError } = useSWR('/circles', readAllCircle);
-  const { data: partiesRes, isLoading: partiesLoading, error: partiesError } = useSWR('/parties', readAllParty);
-  const { data: messagesRes, isLoading: messagesLoading, error: messagesError } = useSWR('/messages', readAllMessage);
+  // const { data: partiesRes, isLoading: partiesLoading, error: partiesError } = useSWR('/parties', readAllParty);
+  // const { data: messagesRes, isLoading: messagesLoading, error: messagesError } = useSWR('/messages', readAllMessage);
 
-  circlesRes?.data && dispatch({ type: CircleActionEmun.CREATE_CIRCLE, payload: circlesRes.data as Circle });
+  useEffect(() => {
+    dispatch({ type: CircleActionEmun.CREATE_CIRCLE, payload: circlesRes?.data as Circle });
+    // partiesRes?.data && dispatch({ type: PartyActionEmun.CREATE_PARTY, payload: partiesRes.data as Party });
 
-  partiesError?.data && dispatch({ type: PartyActionEmun.CREATE_PARTY, payload: partiesRes?.data as Party });
+    // messagesRes?.data && dispatch({ type: MessageActionEmun.CREATE_MESSAGE, payload: messagesRes.data as Message });
+  }, []);
 
-  messagesRes?.data && dispatch({ type: MessageActionEmun.CREATE_MESSAGE, payload: messagesRes.data as Message });
-
-  if (circlesError || partiesError || messagesError) {
+  if (circlesError) {
     throw circlesError;
   }
-  if (circlesLoading || partiesLoading || messagesLoading) {
+  if (circlesLoading) {
     return <span>Loading.....</span>;
   }
   return (
