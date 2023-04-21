@@ -15,6 +15,14 @@ function Sidenav({ className, hide }: Props) {
       <ComposedReactAppNavLink title="Friends" link="friends" lucideIcon={<Users size={30} />} hide={hide} />
       <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide={hide} />
       <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} hide={hide} />
+      <button
+        onClick={() => {
+          localStorage.clear();
+          sessionStorage.clear();
+        }}
+      >
+        Logout
+      </button>
     </nav>
     // </div>
   );
