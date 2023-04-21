@@ -1,4 +1,4 @@
-import { circlesEndpoint, keepupApiAuthAxiosInstance, keepupApiAxiosInstance } from '../utils/axios';
+import { circlesEndpoint, keepupApiAxiosInstance } from '../utils/axios';
 
 const axiosInstance = keepupApiAxiosInstance;
 
