@@ -45,20 +45,10 @@ export const keepupApiAxiosInstance = (endpoint: string) => {
       let retry: boolean = false;
 
       if (originalConfig && err.response) {
-        if (originalConfig.url === '/refresh') {
-          // refresh Token was expired
-          if (err.status === 498) {
-            console.log('refresh error');
-
-            localStorage.clear();
-            sessionStorage.clear();
-          }
-          return Promise.reject(err);
-        }
-
         // Access Token was expired
+        const excludedUrl = ['/refresh', '/login'];
 
-        if (originalConfig.url !== '/refresh' && err.response.status === 401) {
+        if (!excludedUrl.includes(originalConfig.url as string) && err.response.status === 401) {
           try {
             const rs = await axios.get('/auth/refresh', {
               baseURL: baseAPIURL,
