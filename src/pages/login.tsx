@@ -23,7 +23,6 @@ const Login = () => {
     try {
       const { data: resData } = await login(username, password);
       if (resData) {
-        console.log(resData);
         const user: UserType = {
           id: resData.id,
           email: resData.email,
