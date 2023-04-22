@@ -14,6 +14,7 @@ import { useState } from 'react';
 import Chat from './pages/chat';
 import Sidenav from './components/sidenav';
 import ChatHeader from './components/chat/chat-header';
+import PersistLogin from './components/persist-login';
 
 function App() {
   const router = createBrowserRouter(
@@ -24,16 +25,18 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
         </Route>
-        <Route element={<RequireAuth />}>
-          <Route path=":id" element={<AuthLayout />}>
-            <Route index element={<Navigate to={'chats'} replace />} />
-            <Route path="friends" element={<Friends />} />
-            <Route path="activities" element={<Activities />} />
-            <Route path="account" element={<Account />} />
-            <Route path="events" element={<Event />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="setting" element={<Setting />} />
-            <Route path="chats" element={<Chat />} />
+        <Route element={<PersistLogin />}>
+          <Route element={<RequireAuth />}>
+            <Route path=":id" element={<AuthLayout />}>
+              <Route index element={<Navigate to={'chats'} replace />} />
+              <Route path="friends" element={<Friends />} />
+              <Route path="activities" element={<Activities />} />
+              <Route path="account" element={<Account />} />
+              <Route path="events" element={<Event />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="setting" element={<Setting />} />
+              <Route path="chats" element={<Chat />} />
+            </Route>
           </Route>
         </Route>
       </Route>
