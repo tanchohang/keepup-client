@@ -22,21 +22,21 @@ const Login = () => {
 
     if (resData) {
       console.log(resData);
-      // const user: UserType = {
-      //   id: resData.id,
-      //   email: resData.email,
-      //   username: resData.username,
-      //   fullname: resData.fullname,
-      //   accessToken: resData.accessToken,
-      // };
+      const user: UserType = {
+        id: resData.id,
+        email: resData.email,
+        username: resData.username,
+        fullname: resData.fullname,
+        accessToken: resData.accessToken,
+      };
 
-      // setAuth(user);
-      // localStorage.setItem('token', resData.refresh_token);
-      // sessionStorage.setItem('accessToken', resData.access_token);
+      setAuth(user);
+      localStorage.setItem('token', resData.refresh_token);
+      sessionStorage.setItem('accessToken', resData.access_token);
 
-      // if (location.state?.from) {
-      //   navigate(location.state?.from?.pathname || '/', { replace: true });
-      // }
+      if (location.state?.from) {
+        navigate(location.state?.from?.pathname || '/', { replace: true });
+      }
     }
   }
 
