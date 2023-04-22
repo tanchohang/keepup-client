@@ -4,7 +4,6 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { login } from '../services/auth.service';
 import useAuth, { AuthUser as UserType } from '../context/auth.context';
-import axios from 'axios';
 
 const Login = () => {
   const {
@@ -19,23 +18,25 @@ const Login = () => {
   async function submitHandler(data: FieldValues): Promise<void> {
     const { username, password } = data;
     const { data: resData } = await login(username, password);
+    console.log(resData);
 
     if (resData) {
-      const user: UserType = {
-        id: resData.id,
-        email: resData.email,
-        username: resData.username,
-        fullname: resData.fullname,
-        access_token: resData.access_token,
-      };
+      console.log(resData);
+      // const user: UserType = {
+      //   id: resData.id,
+      //   email: resData.email,
+      //   username: resData.username,
+      //   fullname: resData.fullname,
+      //   accessToken: resData.accessToken,
+      // };
 
-      setAuth(user);
-      localStorage.setItem('token', resData.refresh_token);
-      sessionStorage.setItem('accessToken', resData.access_token);
+      // setAuth(user);
+      // localStorage.setItem('token', resData.refresh_token);
+      // sessionStorage.setItem('accessToken', resData.access_token);
 
-      if (location.state.from) {
-        navigate(location.state?.from?.pathname || '/', { replace: true });
-      }
+      // if (location.state?.from) {
+      //   navigate(location.state?.from?.pathname || '/', { replace: true });
+      // }
     }
   }
 
