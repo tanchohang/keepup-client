@@ -1,4 +1,5 @@
 import { Image, PlusSquare } from 'lucide-react';
+import { SearchBar } from '../searchbar';
 
 interface Props {
   openDetail: (id: string) => void;
@@ -8,6 +9,8 @@ const ChatList = ({ openDetail }: Props) => {
     <>
       <div className="p-5 md:border-r md:border-zinc-100 min-h-full">
         <ChatListHeader />
+
+        <CreatePartyForm />
         <SearchBar />
         <ChatListBody />
       </div>
@@ -29,18 +32,6 @@ const ChatListHeader = () => {
   );
 };
 
-const SearchBar = () => {
-  return (
-    <header className="flex w-full pb-5">
-      <input
-        type="text"
-        placeholder="Search"
-        className="text-lg p-1 px-3 rounded-full focus:outline-cyan-500 border border-zinc-200 w-full text-black"
-      />
-    </header>
-  );
-};
-
 const ChatListBody = () => {
   return (
     <div>
@@ -55,6 +46,13 @@ const ChatListBody = () => {
   );
 };
 
-const CreateParty = () => {};
+const CreatePartyForm = () => {
+  return (
+    <div className="flex flex-col gap-5 py-5 mb-3">
+      <input placeholder="group name" className="border-b outline-none focus:border-cyan-500" />
+      <input placeholder="add friends" className="border-b outline-none focus:border-cyan-500" />
+    </div>
+  );
+};
 
 export { ChatList };
