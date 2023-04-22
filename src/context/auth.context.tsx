@@ -5,7 +5,7 @@ export type AuthUser = {
   fullname: string;
   id: string;
   email: string;
-  access_token: string;
+  accessToken: string;
 };
 
 interface AuthContextType {
