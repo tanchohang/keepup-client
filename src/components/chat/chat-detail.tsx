@@ -2,12 +2,12 @@ import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoI
 import { ChangeEvent, KeyboardEvent } from 'react';
 
 interface Props {
-  clearParty?: () => void;
+  handleShowDetails: () => void;
 }
-const ChatDetail = ({ clearParty }: Props) => {
+const ChatDetail = ({ handleShowDetails }: Props) => {
   return (
     <div className="flex flex-col h-[100vh]">
-      <ChatDetailHeader clearParty={clearParty} />
+      <ChatDetailHeader handleShowDetails={handleShowDetails} />
 
       <section className="flex flex-col h-[93%]">
         <ChatBody />
@@ -18,11 +18,11 @@ const ChatDetail = ({ clearParty }: Props) => {
   );
 };
 
-const ChatDetailHeader = ({ clearParty }: Props) => {
+const ChatDetailHeader = ({ handleShowDetails }: Props) => {
   return (
     <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">
-        <button onClick={clearParty}>
+        <button onClick={handleShowDetails} className="md:hidden">
           <ChevronLeft size={40} />
         </button>
         <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={40} />

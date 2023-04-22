@@ -21,6 +21,7 @@ interface Props {}
 const Chat = (props: Props) => {
   const { dispatch } = useChatContext();
   const [showForm, setShowForm] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
 
   const { data: circlesRes, isLoading: circlesLoading, error: circlesError } = useSWR('/circles', readAllCircle);
   // const { data: partiesRes, isLoading: partiesLoading, error: partiesError } = useSWR('/parties', readAllParty);
@@ -47,53 +48,29 @@ const Chat = (props: Props) => {
   };
   return (
     <ChatContextProvider>
-      <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(700px,1fr)]">
+      <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(700px,1fr)] ">
         <div className="relative">
           <ChatList
             handleCreateButton={() => {
               setShowForm(true);
             }}
+            handleShowDetails={() => {
+              setShowDetail(true);
+            }}
           />
           {showForm && (
             <PartyFormContextProvider>
-              <CreatePartyForm className="absolute inset-0 bg-white p-5 z-50" onCancel={() => setShowForm(false)} onFormSubmit={submitHandler} />
+              <CreatePartyForm className="absolute inset-0 p-5 z-50 bg-white" onCancel={() => setShowForm(false)} onFormSubmit={submitHandler} />
             </PartyFormContextProvider>
           )}
         </div>
 
-        <div>
-          <ChatDetail />
+        <div className={`${showDetail ? 'block' : 'hidden'} absolute bg-white inset-0 md:static md:block`}>
+          <ChatDetail handleShowDetails={() => setShowDetail(false)} />
         </div>
       </div>
     </ChatContextProvider>
   );
 };
 
-// const ChatMediumScreen = () => {
-//   return (
-//     <div className=" hidden md:grid md:grid-cols-[minmax(max-content,40%),minmax(700px,1fr)]">
-//       <div className="">
-//         <ChatList />
-//       </div>
-
-//       <div className="">
-//         <ChatDetail />
-//       </div>
-//     </div>
-//   );
-// };
-
-// const ChatMobile = () => {
-//   return (
-//     <div className="w-full md:hidden">
-//       <div>
-//         <ChatList />
-//       </div>
-
-//       <div className="hidden">
-//         <ChatDetail />
-//       </div>
-//     </div>
-//   );
-// };
 export default Chat;
