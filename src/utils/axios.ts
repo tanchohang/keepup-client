@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const baseAPIURL = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://keepup.tanchohang.dev/api';
 
@@ -11,19 +11,26 @@ export const messagesEndpoint = 'messages';
 
 export const keepupApiAxiosInstance = (endpoint: string) => {
   const instance = axios.create({
-    baseURL: baseAPIURL,
     headers: { 'Content-Type': 'application/json' },
   });
   instance.interceptors.request.use(
     (config) => {
       config.baseURL = [baseAPIURL, endpoint].join('/');
-      if (config.url !== '/login') {
-        const token = sessionStorage.getItem('accessToken');
-        if (token) {
-          config.headers['Authorization'] = 'Bearer ' + token; // for Spring Boot back-end
-          // config.headers['x-access-token'] = token; // for Node.js Express back-end
+      if (!config.headers.Authorization) {
+        if (!(config.url === '/login' || config.url === '/refresh')) {
+          const token = sessionStorage.getItem('accessToken');
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token; // for Spring Boot back-end
+          }
         }
       }
+      // if (config.url !== '/refresh') {
+      //   const token = localStorage.getItem('token');
+      //   if (token) {
+      //     config.headers['Authorization'] = 'Bearer ' + token; // for Spring Boot back-end
+      //   }
+      // }
+
       return config;
     },
     (error) => {
@@ -32,30 +39,44 @@ export const keepupApiAxiosInstance = (endpoint: string) => {
   );
 
   instance.interceptors.response.use(
-    (res) => {
-      return res;
-    },
-    async (err) => {
-      const originalConfig = err.config;
+    (res: AxiosResponse) => res,
+    async (err: AxiosError) => {
+      const originalConfig = err?.config;
+      let retry: boolean = false;
 
-      if (originalConfig.url !== '/login' && err.response) {
+      if (originalConfig && err.response) {
+        if (originalConfig.url === '/refresh') {
+          // refresh Token was expired
+          if (err.status === 498) {
+            console.log('refresh error');
+
+            localStorage.clear();
+            sessionStorage.clear();
+          }
+          return Promise.reject(err);
+        }
+
         // Access Token was expired
-        if (err.response.status === 401 && !originalConfig._retry) {
-          originalConfig._retry = true;
 
+        if (originalConfig.url !== '/refresh' && err.response.status === 401) {
           try {
-            const rs = await instance.get('/auth/refresh', { headers: { Authorization: localStorage.getItem('token') } });
-
+            const rs = await axios.get('/auth/refresh', {
+              baseURL: baseAPIURL,
+              headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            });
             const { accessToken } = rs.data;
-            sessionStorage.setItem(accessToken, accessToken);
-
+            sessionStorage.setItem('accessToken', accessToken);
+            originalConfig.headers['Authorization'] = `Bearer ${accessToken}`;
             return instance(originalConfig);
-          } catch (_error) {
-            return Promise.reject(_error);
+          } catch (_error: any) {
+            if (_error.response.status === 498) {
+              localStorage.clear();
+              sessionStorage.clear();
+              window.location.reload();
+            }
           }
         }
       }
-
       return Promise.reject(err);
     }
   );
