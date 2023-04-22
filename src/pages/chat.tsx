@@ -37,34 +37,37 @@ const Chat = (props: Props) => {
   }
   return (
     <>
-      <div className="w-full md:hidden">
-        {!selectedParty && (
-          <div>
-            <ChatList openDetail={(partyId: string) => setSelectedParty(partyId)} />
-          </div>
-        )}
-        {selectedParty && (
-          <div className="">
-            <ChatDetail
-              clearParty={() => {
-                setSelectedParty(undefined);
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className=" hidden md:grid md:grid-cols-[minmax(max-content,30%),minmax(700px,1fr)]">
-        <div className="">
-          <ChatList openDetail={(partyId: string) => setSelectedParty(partyId)} />
-        </div>
-
-        <div className="">
-          <ChatDetail />
-        </div>
-      </div>
+      <ChatMediumScreen />
+      <ChatMobile />
     </>
   );
 };
 
+const ChatMediumScreen = () => {
+  return (
+    <div className=" hidden md:grid md:grid-cols-[minmax(max-content,40%),minmax(700px,1fr)]">
+      <div className="">
+        <ChatList openDetail={(partyId: string) => {}} />
+      </div>
+
+      <div className="">
+        <ChatDetail />
+      </div>
+    </div>
+  );
+};
+
+const ChatMobile = () => {
+  return (
+    <div className="w-full md:hidden">
+      <div>
+        <ChatList openDetail={(partyId: string) => {}} />
+      </div>
+
+      <div className="">
+        <ChatDetail clearParty={() => {}} />
+      </div>
+    </div>
+  );
+};
 export default Chat;

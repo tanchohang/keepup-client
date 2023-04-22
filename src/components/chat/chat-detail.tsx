@@ -7,7 +7,7 @@ interface Props {
 const ChatDetail = ({ clearParty }: Props) => {
   return (
     <div className="flex flex-col h-[100vh]">
-      <ChatHeader clearParty={clearParty} />
+      <ChatDetailHeader clearParty={clearParty} />
 
       <section className="flex flex-col h-[93%]">
         <ChatBody />
@@ -18,7 +18,7 @@ const ChatDetail = ({ clearParty }: Props) => {
   );
 };
 
-const ChatHeader = ({ clearParty }: Props) => {
+const ChatDetailHeader = ({ clearParty }: Props) => {
   return (
     <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">

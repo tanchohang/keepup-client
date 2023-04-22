@@ -66,12 +66,11 @@ const AuthLayout = () => {
   return (
     <div>
       <div className="grid grid-rows-[1fr,max-content] md:grid-cols-[max-content,1fr] bg-white text-black dark:bg-cyan-950 dark:text-white min-h-screen">
-        {/* <div className=" "> */}
-        <Sidenav className="order-last md:order-first" hide={hideSidenav} />
-        {/* </div> */}
+        <div className="order-last md:order-first ">
+          <Sidenav />
+        </div>
         <div className="">
           <ChatContextProvider>
-            <ChatHeader sidenavHandler={() => setHideSidenav((prev) => !prev)} />
             <Outlet />
           </ChatContextProvider>
         </div>
