@@ -13,5 +13,10 @@ export const refreshAccessToken = async () => {
 };
 
 export const logout = async () => {
-  localStorage.removeItem('token');
+  const response = await keepupApiAxiosInstance(authEndpoint).delete('/logout');
+  if (response.data.acknowledged) {
+    sessionStorage.clear();
+    localStorage.clear();
+  }
+  return response.data.acknowledged;
 };

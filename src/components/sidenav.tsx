@@ -3,6 +3,7 @@ import { ComposedReactAppNavLink } from './nav-link';
 import { HTMLAttributes } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../context/auth.context';
+import { logout } from '../services/auth.service';
 
 interface Props {
   className: string;
@@ -20,12 +21,10 @@ function Sidenav({ className, hide }: Props) {
       <ComposedReactAppNavLink title="Account" link="account" lucideIcon={<User size={30} />} hide={hide} />
       <ComposedReactAppNavLink title="Events" link="events" lucideIcon={<Calendar size={30} />} hide={hide} />
       <button
-        onClick={() => {
-          localStorage.clear();
-          sessionStorage.clear();
-          setAuth(null);
-
-          navigate('/');
+        onClick={async () => {
+          if (await logout()) {
+            setAuth(null);
+          }
         }}
       >
         Logout
