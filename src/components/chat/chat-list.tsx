@@ -1,16 +1,17 @@
 import { Image, PlusSquare } from 'lucide-react';
 import { SearchBar } from '../searchbar';
-
+import { CreatePartyForm } from './create-party-form';
+import { useState } from 'react';
+import { PartyFormContextProvider } from '../../context/create-party-form.context';
+import { createParty } from '../../services/party.service';
 interface Props {
-  openDetail: (id: string) => void;
+  handleCreateButton: () => void;
 }
-const ChatList = ({ openDetail }: Props) => {
+const ChatList = ({ handleCreateButton }: Props) => {
   return (
     <>
-      <div className="p-5 md:border-r md:border-zinc-100 min-h-full">
-        <ChatListHeader />
-
-        <CreatePartyForm />
+      <div className="p-5 md:border-r md:border-zinc-100 min-h-full relative">
+        <ChatListHeader showForm={handleCreateButton} />
         <SearchBar />
         <ChatListBody />
       </div>
@@ -18,14 +19,14 @@ const ChatList = ({ openDetail }: Props) => {
   );
 };
 
-const ChatListHeader = () => {
+const ChatListHeader = ({ showForm }: { showForm: () => void }) => {
   return (
     <header className="flex md:justify-between ">
       <button onClick={() => {}} className="hidden md:block">
         <Image size={30} />
       </button>
       <h4 className="mx-auto">Chat List</h4>
-      <button className=" hover:shadow-lg justify-self-end ">
+      <button className=" hover:shadow-lg justify-self-end" onClick={showForm}>
         <PlusSquare size={40} className="fill-cyan-500 text-white" />
       </button>
     </header>
@@ -42,15 +43,6 @@ const ChatListBody = () => {
           <span className="font-light">You: subtext goes here. 5d</span>
         </p>
       </button>
-    </div>
-  );
-};
-
-const CreatePartyForm = () => {
-  return (
-    <div className="flex flex-col gap-5 py-5 mb-3">
-      <input placeholder="group name" className="border-b outline-none focus:border-cyan-500" />
-      <input placeholder="add friends" className="border-b outline-none focus:border-cyan-500" />
     </div>
   );
 };
