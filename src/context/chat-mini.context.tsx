@@ -11,7 +11,7 @@ const initialState: ChatMiniContextType = {
 
 const ChatMiniContext = createContext<ChatMiniContextType>(initialState);
 
-export const ChanMiniContextProvider = ({ children }: { children: ReactNode }) => {
+export const ChantMiniContextProvider = ({ children }: { children: ReactNode }) => {
   const [selectedParty, setSelectedParty] = useState<string | undefined>(undefined);
 
   return <ChatMiniContext.Provider value={{ selectedParty, setSelectedParty }}>{children}</ChatMiniContext.Provider>;
