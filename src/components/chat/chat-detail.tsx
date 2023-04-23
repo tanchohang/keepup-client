@@ -46,12 +46,13 @@ const ChatDetailHeader = ({ handleShowDetails }: Props) => {
 
 const ChatBody = () => {
   return (
-    <div className="overflow-auto p-5 h-[100%]">
-      <p>
-        Ut magna et eu et voluptate laborum officia veniam proident consequat pariatur ea ut cillum. Velit non occaecat dolor minim voluptate labore
-        et nisi Lorem nulla anim id non. Officia cupidatat in voluptate laboris ullamco incididunt officia quis. Nulla nulla aliquip et ad ullamco
-        sint exercitation ea.
-      </p>
+    <div className="flex flex-col gap-2 p-5 h-[100%]">
+      <ChatBubble
+        isMyMessage={false}
+        message="Ut magna et eu et voluptate laborum officia veniam proident consequat pariatur ea ut cillum. Velit non occaecat dolor minim voluptate labore
+        et nisi Lorem nulla anim id non."
+      />
+      <ChatBubble isMyMessage={true} message="thiis a test" />
     </div>
   );
 };
@@ -105,6 +106,14 @@ const ChatInputForm = () => {
       <button onClick={handleSendMessage}>
         <Send size={30} className=" fill-cyan-500 text-white" />
       </button>
+    </div>
+  );
+};
+
+const ChatBubble = ({ isMyMessage, message }: { isMyMessage: boolean; message: string }) => {
+  return (
+    <div className={`flex ${isMyMessage ? 'flex-row-reverse' : 'flex-row'} text-white font-normal w-full `}>
+      <p className={`${isMyMessage ? ' bg-blue-700' : 'bg-emerald-600'} rounded-3xl p-3 w-[60%] max-w-max `}>{message}</p>
     </div>
   );
 };
