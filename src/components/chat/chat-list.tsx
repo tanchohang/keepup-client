@@ -1,4 +1,4 @@
-import { Image, PlusSquare } from 'lucide-react';
+import { Image, Menu, PlusSquare } from 'lucide-react';
 import { SearchBar } from '../searchbar';
 import { CreatePartyForm } from './create-party-form';
 import { useState } from 'react';
@@ -7,12 +7,13 @@ import { createParty } from '../../services/party.service';
 interface Props {
   handleCreateButton: () => void;
   handleShowDetails: () => void;
+  handleShowMobileSidenav: () => void;
 }
-const ChatList = ({ handleShowDetails, handleCreateButton }: Props) => {
+const ChatList = ({ handleShowDetails, handleCreateButton, handleShowMobileSidenav }: Props) => {
   return (
     <>
       <div className="p-5 md:border-r md:border-zinc-100 min-h-full relative">
-        <ChatListHeader showForm={handleCreateButton} />
+        <ChatListHeader showForm={handleCreateButton} showMobileSidenav={handleShowMobileSidenav} />
         <SearchBar />
         <ChatListBody handleShowDetails={handleShowDetails} />
       </div>
@@ -20,11 +21,11 @@ const ChatList = ({ handleShowDetails, handleCreateButton }: Props) => {
   );
 };
 
-const ChatListHeader = ({ showForm }: { showForm: () => void }) => {
+const ChatListHeader = ({ showForm, showMobileSidenav }: { showForm: () => void; showMobileSidenav: () => void }) => {
   return (
-    <header className="flex md:justify-between ">
-      <button onClick={() => {}} className="hidden md:block">
-        <Image size={30} />
+    <header className="flex md:justify-between w-full ">
+      <button onClick={showMobileSidenav} className="md:hidden">
+        <Menu size={30} />
       </button>
       <h4 className="mx-auto">Chat List</h4>
       <button className=" hover:shadow-lg justify-self-end" onClick={showForm}>
