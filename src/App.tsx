@@ -13,8 +13,10 @@ import { ChatContextProvider } from './context/chat.context';
 import { useState } from 'react';
 import Chat from './pages/chat';
 import Sidenav from './components/sidenav';
-import ChatHeader from './components/chat/chat-header';
 import PersistLogin from './components/persist-login';
+import { MobileChatSidenav } from './components/chat/mobile-chat-sidenav';
+import { useAppContext } from './context/app.context';
+import Requests from './pages/requests';
 
 function App() {
   const router = createBrowserRouter(
@@ -36,6 +38,7 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="setting" element={<Setting />} />
               <Route path="chats" element={<Chat />} />
+              <Route path="requests" element={<Requests />} />
             </Route>
           </Route>
         </Route>
@@ -63,8 +66,14 @@ const AuthLayout = () => {
   const path = router.pathname.match(/.+\/chats\/.+/);
   const username = path?.[0]?.split('/')[1];
 
+  const { showMobileSidebar } = useAppContext();
+
   return (
-    <div>
+    <div className="min-h-screen relative">
+      <div className={`absolute top-0 left-0 bottom-0 z-50`}>
+        <MobileChatSidenav />
+      </div>
+
       <div className="grid grid-rows-[1fr,max-content] md:grid-cols-[max-content,1fr] bg-white text-black dark:bg-cyan-950 dark:text-white min-h-screen">
         <div className="order-last md:order-first ">
           <Sidenav />

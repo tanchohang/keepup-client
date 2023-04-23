@@ -12,10 +12,11 @@ import { Message, MessageActionEmun } from '../reducers/message.reducer';
 import { ChatContextProvider, useChatContext } from '../context/chat.context';
 import { Menu, PlusSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { ChanMiniContextProvider } from '../context/chat-mini.context';
+import { ChantMiniContextProvider, useChatMiniContext } from '../context/chat-mini.context';
 import { PartyFormContextProvider, usePartyFormContext } from '../context/create-party-form.context';
 import { CreatePartyForm } from '../components/chat/create-party-form';
 import { MobileChatSidenav } from '../components/chat/mobile-chat-sidenav';
+import { useAppContext } from '../context/app.context';
 
 interface Props {}
 
@@ -23,7 +24,7 @@ const Chat = (props: Props) => {
   const { dispatch } = useChatContext();
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const [isMobileSidenavClosed, setIsMobileSidenavClosed] = useState(true);
+  const { showMobileSidebar } = useAppContext();
 
   const { data: circlesRes, isLoading: circlesLoading, error: circlesError } = useSWR('/circles', readAllCircle);
   // const { data: partiesRes, isLoading: partiesLoading, error: partiesError } = useSWR('/parties', readAllParty);
@@ -50,40 +51,30 @@ const Chat = (props: Props) => {
   };
   return (
     <ChatContextProvider>
-      <div className="flex md:block">
-        <div className={`absolute w-max md:hidden md:static z-40 text-white`}>
-          <MobileChatSidenav setHide={() => setIsMobileSidenavClosed(true)} hide={isMobileSidenavClosed} />
-        </div>
-
-        <div
-          className=" grid md:grid-cols-[minmax(max-content,40%),minmax(700px,1fr)] w-full "
-          onClick={(event: any) => {
-            setIsMobileSidenavClosed(!isMobileSidenavClosed);
-          }}
-        >
-          <div className="relative">
-            <ChatList
-              handleCreateButton={() => {
-                setShowForm(true);
-              }}
-              handleShowDetails={() => {
-                setShowDetail(true);
-              }}
-              handleShowMobileSidenav={() => {
-                setIsMobileSidenavClosed(!isMobileSidenavClosed);
-              }}
-            />
-            {showForm && (
-              <PartyFormContextProvider>
-                <CreatePartyForm className="absolute inset-0 p-5 z-50 bg-white" onCancel={() => setShowForm(false)} onFormSubmit={submitHandler} />
-              </PartyFormContextProvider>
-            )}
-          </div>
-          <div className={`${showDetail ? 'block' : 'hidden'} absolute bg-white inset-0 md:static md:block`}>
-            <ChatDetail handleShowDetails={() => setShowDetail(false)} />
+      <ChantMiniContextProvider>
+        <div className="flex md:block">
+          <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(700px,1fr)] w-full">
+            <div className="relative">
+              <ChatList
+                handleCreateButton={() => {
+                  setShowForm(true);
+                }}
+                handleShowDetails={() => {
+                  setShowDetail(true);
+                }}
+              />
+              {showForm && (
+                <PartyFormContextProvider>
+                  <CreatePartyForm className="absolute inset-0 p-5 z-50 bg-white" onCancel={() => setShowForm(false)} onFormSubmit={submitHandler} />
+                </PartyFormContextProvider>
+              )}
+            </div>
+            <div className={`${showDetail ? 'block' : 'hidden'} absolute bg-white inset-0 md:static md:block`}>
+              <ChatDetail handleShowDetails={() => setShowDetail(false)} />
+            </div>
           </div>
         </div>
-      </div>
+      </ChantMiniContextProvider>
     </ChatContextProvider>
   );
 };

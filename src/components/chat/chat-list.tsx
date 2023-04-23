@@ -4,16 +4,17 @@ import { CreatePartyForm } from './create-party-form';
 import { useState } from 'react';
 import { PartyFormContextProvider } from '../../context/create-party-form.context';
 import { createParty } from '../../services/party.service';
+import { useChatMiniContext } from '../../context/chat-mini.context';
+import { useAppContext } from '../../context/app.context';
 interface Props {
   handleCreateButton: () => void;
   handleShowDetails: () => void;
-  handleShowMobileSidenav: () => void;
 }
-const ChatList = ({ handleShowDetails, handleCreateButton, handleShowMobileSidenav }: Props) => {
+const ChatList = ({ handleShowDetails, handleCreateButton }: Props) => {
   return (
     <>
       <div className="p-5 md:border-r md:border-zinc-100 min-h-full relative">
-        <ChatListHeader showForm={handleCreateButton} showMobileSidenav={handleShowMobileSidenav} />
+        <ChatListHeader showForm={handleCreateButton} />
         <SearchBar />
         <ChatListBody handleShowDetails={handleShowDetails} />
       </div>
@@ -21,10 +22,17 @@ const ChatList = ({ handleShowDetails, handleCreateButton, handleShowMobileSiden
   );
 };
 
-const ChatListHeader = ({ showForm, showMobileSidenav }: { showForm: () => void; showMobileSidenav: () => void }) => {
+const ChatListHeader = ({ showForm }: { showForm: () => void }) => {
+  const { showMobileSidebar, setShowMobileSidebar } = useAppContext();
+
   return (
     <header className="flex md:justify-between w-full ">
-      <button onClick={showMobileSidenav} className="md:hidden">
+      <button
+        onClick={() => {
+          setShowMobileSidebar(true);
+        }}
+        className="md:hidden"
+      >
         <Menu size={30} />
       </button>
       <h4 className="mx-auto">Chat List</h4>
