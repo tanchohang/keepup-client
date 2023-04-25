@@ -7,23 +7,23 @@ export interface Party {
 }
 
 export const enum PartyActionEmun {
-  CREATE_PARTY = 'CREATE_PARTY',
-  READ_PARTIES = 'READ_PARTIES',
+  ADD_PARTY = 'ADD_PARTY',
+  FETCH_PARTIES = 'FETCH_PARTIES',
   UPDATE_PARTY = 'UPDATE_PARTY',
   DELETE_PARTY = 'DELETE_PARTY',
 }
 
 export type PartyAction =
-  | { type: PartyActionEmun.READ_PARTIES; payload: Party[] }
-  | { type: PartyActionEmun.CREATE_PARTY; payload: Party }
+  | { type: PartyActionEmun.FETCH_PARTIES; payload: Party[] }
+  | { type: PartyActionEmun.ADD_PARTY; payload: Party }
   | { type: PartyActionEmun.UPDATE_PARTY; payload: Party }
   | { type: PartyActionEmun.DELETE_PARTY; payload: string };
 
 export const partyReducer = (parties: Party[], action: PartyAction): Party[] => {
   switch (action.type) {
-    case PartyActionEmun.READ_PARTIES:
-      return parties;
-    case PartyActionEmun.CREATE_PARTY:
+    case PartyActionEmun.FETCH_PARTIES:
+      return action.payload;
+    case PartyActionEmun.ADD_PARTY:
       return [...parties, action.payload];
 
     case PartyActionEmun.UPDATE_PARTY:

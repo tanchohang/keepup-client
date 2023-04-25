@@ -45,7 +45,7 @@ export const ChatContextProvider = ({ children }: { children: ReactNode }) => {
     dispatch,
   };
 
-  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
+  return <ChatContext.Provider value={{ ...value }}>{children}</ChatContext.Provider>;
 };
 
 export const useChatContext = () => {

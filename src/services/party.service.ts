@@ -5,8 +5,8 @@ export const createParty = async () => {
   return response;
 };
 
-export const readAllParty = async () => {
-  const response = await keepupApiAxiosInstance(partiesEndpoint).get('/');
+export const readAllParty = async (cid: string) => {
+  const response = await keepupApiAxiosInstance(partiesEndpoint).get('/circle/' + cid);
   return response;
 };
 

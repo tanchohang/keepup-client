@@ -5,7 +5,7 @@ import useAuth from '../context/auth.context';
 import { logout } from '../services/auth.service';
 import { useState } from 'react';
 
-function Sidenav() {
+export const Sidenav = () => {
   const [hidden, setHidden] = useState(false);
   const { setAuth } = useAuth();
   return (
@@ -38,5 +38,4 @@ function Sidenav() {
       </div>
     </div>
   );
-}
-export default Sidenav;
+};

@@ -10,13 +10,15 @@ import { Event } from './pages/events';
 import RequireAuth from './components/require-auth';
 import UnAuthorized from './components/unauthorised';
 import { ChatContextProvider } from './context/chat.context';
-import { useState } from 'react';
 import Chat from './pages/chat';
-import Sidenav from './components/sidenav';
 import PersistLogin from './components/persist-login';
-import { MobileChatSidenav } from './components/chat/mobile-chat-sidenav';
-import { useAppContext } from './context/app.context';
 import Requests from './pages/requests';
+import { AuthLayout } from './components/auth-layout';
+
+import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const queryClient = new QueryClient();
 
 function App() {
   const router = createBrowserRouter(
@@ -29,7 +31,14 @@ function App() {
         </Route>
         <Route element={<PersistLogin />}>
           <Route element={<RequireAuth />}>
-            <Route path=":id" element={<AuthLayout />}>
+            <Route
+              path=":id"
+              element={
+                <ChatContextProvider>
+                  <AuthLayout />
+                </ChatContextProvider>
+              }
+            >
               <Route index element={<Navigate to={'chats'} replace />} />
               <Route path="friends" element={<Friends />} />
               <Route path="activities" element={<Activities />} />
@@ -46,9 +55,12 @@ function App() {
     )
   );
   return (
-    <div>
-      <RouterProvider router={router} />
-    </div>
+    <>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </>
   );
 }
 
@@ -56,34 +68,6 @@ const Root = () => {
   return (
     <div>
       <Outlet />
-    </div>
-  );
-};
-
-const AuthLayout = () => {
-  const [hideSidenav, setHideSidenav] = useState(false);
-  const router = useLocation();
-  const path = router.pathname.match(/.+\/chats\/.+/);
-  const username = path?.[0]?.split('/')[1];
-
-  const { showMobileSidebar } = useAppContext();
-
-  return (
-    <div className="min-h-screen relative">
-      <div className={`absolute top-0 left-0 bottom-0 z-50`}>
-        <MobileChatSidenav />
-      </div>
-
-      <div className="grid grid-rows-[1fr,max-content] md:grid-cols-[max-content,1fr] bg-white text-black dark:bg-cyan-950 dark:text-white min-h-screen">
-        <div className="order-last md:order-first ">
-          <Sidenav />
-        </div>
-        <div className="">
-          <ChatContextProvider>
-            <Outlet />
-          </ChatContextProvider>
-        </div>
-      </div>
     </div>
   );
 };

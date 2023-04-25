@@ -20,7 +20,8 @@ export const circleReducer = (circle: Circle, action: CircleAction): Circle => {
     case CircleActionEmun.READ_CIRCLES:
       return circle;
     case CircleActionEmun.CREATE_CIRCLE:
-      return circle;
+      console.log(action.payload);
+      return action.payload as Circle;
 
     case CircleActionEmun.UPDATE_CIRCLE:
       return circle;

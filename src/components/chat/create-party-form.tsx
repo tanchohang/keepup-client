@@ -7,15 +7,15 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   onFormSubmit: (fd: any) => void;
 }
 export const CreatePartyForm = ({ onCancel, onFormSubmit, ...props }: Props) => {
-  const { formdata, setFormData } = usePartyFormContext();
+  const [store, setStore] = usePartyFormContext()!;
 
   return (
     <div {...props}>
       <Header
         onCancel={onCancel}
         onCreate={() => {
-          onFormSubmit(formdata);
-          setFormData({ name: '', friends: [] });
+          // onFormSubmit(store);
+          setStore(store);
         }}
       />
       <Body />
@@ -38,14 +38,13 @@ const Header = ({ onCancel, onCreate }: { onCancel: () => void; onCreate: () => 
 };
 
 const Body = () => {
-  const { formdata, setFormData } = usePartyFormContext();
+  const [store, setStore] = usePartyFormContext()!;
 
   function setName(name: string) {
-    setFormData({ name, friends: formdata.friends });
-    console.log(formdata.name);
+    setStore({ name, friends: store.friends });
   }
   function setFriends(friend: string) {
-    setFormData({ friends: [friend, ...formdata.friends], name: formdata.name });
+    setStore({ friends: [friend, ...store.friends], name: store.name });
   }
   return (
     <div className="flex flex-col gap-5 py-5 mb-3">
@@ -55,7 +54,7 @@ const Body = () => {
         onChange={(e) => {
           setName(e.target.value);
         }}
-        value={formdata.name}
+        value={store.name}
       />
       <SearchBar />
       <SelectedFreindList />
