@@ -20,7 +20,14 @@ const Signup = () => {
     try {
       const { data: resData } = await createUser(data as AuthUser);
       if (resData) {
-        setAuth({ username: resData.username, fullname: resData.fullname, email: resData.email, accessToken: resData.accessToken, id: resData.id });
+        setAuth({
+          username: resData.username,
+          fullname: resData.fullname,
+          email: resData.email,
+          accessToken: resData.accessToken,
+          id: resData.id,
+          circle: resData.circle,
+        });
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

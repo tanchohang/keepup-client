@@ -14,9 +14,8 @@ import Chat from './pages/chat';
 import PersistLogin from './components/persist-login';
 import Requests from './pages/requests';
 import { AuthLayout } from './components/auth-layout';
-
-import { ReactQueryDevtools } from 'react-query/devtools';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 

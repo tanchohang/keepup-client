@@ -1,13 +1,24 @@
+import { z } from 'zod';
 import { keepupApiAxiosInstance, partiesEndpoint } from '../utils/axios';
+import { Party } from '../reducers/party.reducer';
 
-export const createParty = async () => {
-  const response = await keepupApiAxiosInstance(partiesEndpoint).post('/');
+const Schema = z.array(
+  z.object({
+    name: z.string(),
+    circle: z.string(),
+    id: z.string(),
+    users: z.string().array(),
+  })
+);
+
+export const createParty = async (party: { users: string[]; name: string; circle: string }) => {
+  const response = await keepupApiAxiosInstance(partiesEndpoint).post('/', party);
   return response;
 };
 
-export const readAllParty = async (cid: string) => {
-  const response = await keepupApiAxiosInstance(partiesEndpoint).get('/circle/' + cid);
-  return response;
+export const readAllParty = async () => {
+  const response = await keepupApiAxiosInstance(partiesEndpoint).get('/');
+  return response.data;
 };
 
 export const readParty = async (id: string) => {

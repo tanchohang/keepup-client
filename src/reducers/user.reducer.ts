@@ -3,6 +3,7 @@ export interface User {
   fullname: string;
   username: string;
   email: string;
+  circle: string;
 }
 
 export const enum UserActionEmun {

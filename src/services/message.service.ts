@@ -1,36 +1,26 @@
-import { keepupApiAxiosInstance, messagesEndpoint } from '../utils/axios';
+import { keepupApiAxiosInstance, messagesEndpoint, partiesEndpoint } from '../utils/axios';
 
-export const createMessage = async () => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).post('/');
-  return response;
+export const createMessage = async (text: string, partyId: string) => {
+  const response = await keepupApiAxiosInstance(partiesEndpoint).post(`${partyId}/${messagesEndpoint}`, { text });
+  return response.data;
 };
 
-export const readAllMessage = async () => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).get('/');
-  return response;
+export const readAllMessage = async (pid: string) => {
+  const response = await keepupApiAxiosInstance(partiesEndpoint).get(`${pid}/${messagesEndpoint}`);
+  return response.data;
 };
 
-export const readMessage = async (id: string) => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).get(id);
-  return response;
-};
+// export const readMessage = async (id: string) => {
+//   const response = await keepupApiAxiosInstance(messagesEndpoint).get(id);
+//   return response.data;
+// };
 
-export const updateMessage = async (id: string, name: string) => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).put(id, { name });
-  return response;
-};
+// export const updateMessage = async (id: string, name: string) => {
+//   const response = await keepupApiAxiosInstance(messagesEndpoint).put(id, { name });
+//   return response.data;
+// };
 
-export const deleteMessage = async (id: string) => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).delete(id);
-  return response;
-};
-
-export const addToMessage = async (uid: string) => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).post(uid, { user: uid });
-  return response;
-};
-
-export const removeFromMessage = async (uid: string) => {
-  const response = await keepupApiAxiosInstance(messagesEndpoint).post(uid, { user: uid });
-  return response;
-};
+// export const deleteMessage = async (id: string) => {
+//   const response = await keepupApiAxiosInstance(messagesEndpoint).delete(id);
+//   return response.data;
+// };

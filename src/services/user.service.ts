@@ -1,7 +1,6 @@
-import { User } from '../reducers/user.reducer';
 import { keepupApiAxiosInstance, usersEndpoint } from '../utils/axios';
 
-export const createUser = async (user: User) => {
+export const createUser = async (user: any) => {
   const response = await keepupApiAxiosInstance(usersEndpoint).post('/', user);
   return response;
 };

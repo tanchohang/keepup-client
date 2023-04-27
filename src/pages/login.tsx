@@ -29,6 +29,7 @@ const Login = () => {
           username: resData.username,
           fullname: resData.fullname,
           accessToken: resData.accessToken,
+          circle: resData.circle,
         };
 
         setAuth(user);

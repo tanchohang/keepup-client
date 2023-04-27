@@ -1,17 +1,12 @@
 import { Image, Menu, PlusSquare } from 'lucide-react';
 import { SearchBar } from '../searchbar';
-import { CreatePartyForm } from './create-party-form';
-import { useEffect, useState } from 'react';
-import { PartyFormContextProvider } from '../../context/create-party-form.context';
-import { createParty, readAllParty } from '../../services/party.service';
-import { useChatMiniContext } from '../../context/chat-mini.context';
 import { useAppContext } from '../../context/app.context';
-import { useChatContext } from '../../context/chat.context';
-import { Party, PartyActionEmun } from '../../reducers/party.reducer';
+import { useQueryClient } from '@tanstack/react-query';
+import { messagesEndpoint } from '../../utils/axios';
 
 interface Props {
   handleCreateButton: () => void;
-  handleShowDetails: () => void;
+  handleShowDetails: (p: any) => void;
   parties: any[];
 }
 const ChatList = ({ handleShowDetails, handleCreateButton, parties }: Props) => {
@@ -47,7 +42,11 @@ const ChatListHeader = ({ showForm }: { showForm: () => void }) => {
   );
 };
 
-const ChatListBody = ({ handleShowDetails, parties }: { handleShowDetails: () => void; parties: any[] }) => {
+const ChatListBody = ({ handleShowDetails, parties }: { handleShowDetails: (p: any) => void; parties: any[] }) => {
+  const queryClient = useQueryClient();
+
+  if (parties.length === 0) return <div className="flex justify-center items-center h-full">Create new chat to Start chatting with friends</div>;
+
   return (
     <div>
       {parties.map((party) => {
@@ -55,7 +54,10 @@ const ChatListBody = ({ handleShowDetails, parties }: { handleShowDetails: () =>
           <button
             key={party._id}
             className="flex gap-3 hover:bg-zinc-100 dark:bg-slate-700/50 dark:hover:bg-slate-700/75 rounded-3xl p-5"
-            onClick={handleShowDetails}
+            onClick={() => {
+              queryClient.invalidateQueries([messagesEndpoint, party._id]);
+              handleShowDetails(party);
+            }}
           >
             <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={50} />
             <p className="flex flex-col">

@@ -1,24 +1,45 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
-import { ChangeEvent, KeyboardEvent } from 'react';
+import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
+import { messagesEndpoint } from '../../utils/axios';
+import { createMessage, readAllMessage } from '../../services/message.service';
+import useAuth from '../../context/auth.context';
 
 interface Props {
   handleShowDetails: () => void;
+  currentParty: any;
 }
-const ChatDetail = ({ handleShowDetails }: Props) => {
+const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
+  const [messages, setMessages] = useState<any>([]);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: [messagesEndpoint, currentParty._id],
+    queryFn: async () => {
+      return await readAllMessage(currentParty._id);
+    },
+    onSuccess: (data: any) => {
+      setMessages(data);
+    },
+    enabled: !!currentParty,
+    refetchIntervalInBackground: true,
+  });
+  if (!currentParty) return <span>Create a Chat Group</span>;
+  if (isLoading) return <span>Loading....messages....</span>;
+  if (isError) return <span>Error....messages.....</span>;
+
   return (
     <div className="flex flex-col h-[100vh]">
-      <ChatDetailHeader handleShowDetails={handleShowDetails} />
+      <ChatDetailHeader handleShowDetails={handleShowDetails} currentParty={currentParty} />
 
       <section className="flex flex-col h-[93%]">
-        <ChatBody />
+        <ChatBody messages={messages} />
 
-        <ChatInputForm />
+        <ChatInputForm currentParty={currentParty} />
       </section>
     </div>
   );
 };
 
-const ChatDetailHeader = ({ handleShowDetails }: Props) => {
+const ChatDetailHeader = ({ handleShowDetails, currentParty }: { handleShowDetails: () => void; currentParty: any }) => {
   return (
     <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">
@@ -26,7 +47,7 @@ const ChatDetailHeader = ({ handleShowDetails }: Props) => {
           <ChevronLeft size={40} />
         </button>
         <img src="http://unsplash.it/200?gravity=north" className="rounded-full" width={40} />
-        <span className="text-lg font-semibold">Name here</span>
+        <span className="text-lg font-semibold">{currentParty.name}</span>
       </div>
       <div className="flex justify-center items-center gap-8">
         <button>
@@ -44,20 +65,33 @@ const ChatDetailHeader = ({ handleShowDetails }: Props) => {
   );
 };
 
-const ChatBody = () => {
+const ChatBody = ({ messages }: { messages: any[] }) => {
+  const { auth } = useAuth();
+  if (messages.length === 0) return <div className="flex justify-center items-center h-full">Start chatting with friends</div>;
+
   return (
     <div className="flex flex-col gap-2 p-5 h-[100%]">
-      <ChatBubble
-        isMyMessage={false}
-        message="Ut magna et eu et voluptate laborum officia veniam proident consequat pariatur ea ut cillum. Velit non occaecat dolor minim voluptate labore
-        et nisi Lorem nulla anim id non."
-      />
-      <ChatBubble isMyMessage={true} message="thiis a test" />
+      {messages.map((message: any) => (
+        <div key={message._id}>
+          <ChatBubble isMyMessage={message.sender === auth?.id} message={message.text} />
+        </div>
+      ))}
     </div>
   );
 };
 
-const ChatInputForm = () => {
+const ChatInputForm = ({ currentParty }: { currentParty: any }) => {
+  const textareatRef = useRef<HTMLTextAreaElement>(null);
+
+  const queryClient = useQueryClient();
+  const messageMutation = useMutation({
+    mutationFn: async (message: any) => await createMessage(message.text, message.party),
+    onSuccess: () => {
+      queryClient.invalidateQueries([messagesEndpoint]);
+      textareatRef.current!.value = '';
+    },
+  });
+
   function handleSendFile(event: any): void {
     throw new Error('Function not implemented.');
   }
@@ -71,7 +105,7 @@ const ChatInputForm = () => {
   }
 
   function handleChange(event: ChangeEvent<HTMLTextAreaElement>): void {
-    throw new Error('Function not implemented.');
+    // console.log();
   }
 
   function handleKeyUp(event: KeyboardEvent<HTMLTextAreaElement>): void {
@@ -79,7 +113,7 @@ const ChatInputForm = () => {
   }
 
   function handleSendMessage(event: any): void {
-    throw new Error('Function not implemented.');
+    messageMutation.mutate({ text: textareatRef.current?.value, party: currentParty._id });
   }
 
   return (
@@ -99,8 +133,7 @@ const ChatInputForm = () => {
         placeholder="enter message"
         rows={1}
         className="w-[100%] appearance-none resize-none focus:outline-none bg-slate-100 text-lg p-3 rounded-lg"
-        onChange={handleChange}
-        onKeyUp={handleKeyUp}
+        ref={textareatRef}
       />
 
       <button onClick={handleSendMessage}>

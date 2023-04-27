@@ -1,6 +1,5 @@
 import { Calendar, MessageCircle, Newspaper, SidebarClose, SidebarOpen, User, Users } from 'lucide-react';
 import { ComposedReactAppNavLink } from './nav-link';
-import { useNavigate } from 'react-router-dom';
 import useAuth from '../context/auth.context';
 import { logout } from '../services/auth.service';
 import { useState } from 'react';

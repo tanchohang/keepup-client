@@ -1,4 +1,4 @@
-import { Dispatch, DispatchWithoutAction, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
+import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
 export type AuthUser = {
   username: string;
@@ -6,7 +6,7 @@ export type AuthUser = {
   id: string;
   email: string;
   accessToken: string;
-  circle?: string;
+  circle: string;
 };
 
 interface AuthContextType {
