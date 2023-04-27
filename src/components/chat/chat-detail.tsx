@@ -12,9 +12,9 @@ interface Props {
 const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   const [messages, setMessages] = useState<any>([]);
   const { data, isLoading, isError } = useQuery({
-    queryKey: [messagesEndpoint, currentParty._id],
+    queryKey: [messagesEndpoint, currentParty?._id],
     queryFn: async () => {
-      return await readAllMessage(currentParty._id);
+      return await readAllMessage(currentParty?._id);
     },
     onSuccess: (data: any) => {
       setMessages(data);
