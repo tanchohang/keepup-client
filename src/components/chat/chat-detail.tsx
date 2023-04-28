@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
-import { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { messagesEndpoint } from '../../utils/axios';
 import { createMessage, readAllMessage } from '../../services/message.service';
 import useAuth from '../../context/auth.context';
+import { joinParty, sendMessage, socket } from '../../services/socket.service';
 
 interface Props {
   handleShowDetails: () => void;
@@ -11,6 +12,7 @@ interface Props {
 }
 const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   const [messages, setMessages] = useState<any>([]);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: [messagesEndpoint, currentParty?._id],
     queryFn: async () => {
@@ -22,6 +24,7 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
     enabled: !!currentParty,
     refetchIntervalInBackground: true,
   });
+
   if (!currentParty) return <span>Create a Chat Group</span>;
   if (isLoading) return <span>Loading....messages....</span>;
   if (isError) return <span>Error....messages.....</span>;
@@ -31,7 +34,7 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
       <ChatDetailHeader handleShowDetails={handleShowDetails} currentParty={currentParty} />
 
       <section className="flex flex-col h-[93%]">
-        <ChatBody messages={messages} />
+        <ChatBody messages={messages} currentParty={currentParty} />
 
         <ChatInputForm currentParty={currentParty} />
       </section>
@@ -65,12 +68,27 @@ const ChatDetailHeader = ({ handleShowDetails, currentParty }: { handleShowDetai
   );
 };
 
-const ChatBody = ({ messages }: { messages: any[] }) => {
+const ChatBody = ({ messages, currentParty }: { messages: any[]; currentParty: any }) => {
   const { auth } = useAuth();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    socket.connect();
+    joinParty(currentParty._id);
+
+    socket.on('broadcastParty', (data: any) => {
+      queryClient.invalidateQueries([messagesEndpoint, currentParty._id]);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [currentParty]);
+
   if (messages.length === 0) return <div className="flex justify-center items-center h-full">Start chatting with friends</div>;
 
   return (
-    <div className="flex flex-col gap-2 p-5 h-[100%]">
+    <div className="flex flex-col gap-2 p-5 h-[100%] scroll-auto">
       {messages.map((message: any) => (
         <div key={message._id}>
           <ChatBubble isMyMessage={message.sender === auth?.id} message={message.text} />
@@ -82,15 +100,6 @@ const ChatBody = ({ messages }: { messages: any[] }) => {
 
 const ChatInputForm = ({ currentParty }: { currentParty: any }) => {
   const textareatRef = useRef<HTMLTextAreaElement>(null);
-
-  const queryClient = useQueryClient();
-  const messageMutation = useMutation({
-    mutationFn: async (message: any) => await createMessage(message.text, message.party),
-    onSuccess: () => {
-      queryClient.invalidateQueries([messagesEndpoint]);
-      textareatRef.current!.value = '';
-    },
-  });
 
   function handleSendFile(event: any): void {
     throw new Error('Function not implemented.');
@@ -104,16 +113,15 @@ const ChatInputForm = ({ currentParty }: { currentParty: any }) => {
     throw new Error('Function not implemented.');
   }
 
-  function handleChange(event: ChangeEvent<HTMLTextAreaElement>): void {
-    // console.log();
-  }
+  function handleChange(event: ChangeEvent<HTMLTextAreaElement>): void {}
 
   function handleKeyUp(event: KeyboardEvent<HTMLTextAreaElement>): void {
     throw new Error('Function not implemented.');
   }
 
   function handleSendMessage(event: any): void {
-    messageMutation.mutate({ text: textareatRef.current?.value, party: currentParty._id });
+    sendMessage(textareatRef.current!.value, currentParty._id);
+    textareatRef.current!.value = '';
   }
 
   return (

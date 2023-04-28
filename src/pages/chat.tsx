@@ -7,6 +7,7 @@ import { CreatePartyForm } from '../components/chat/create-party-form';
 import { messagesEndpoint, partiesEndpoint } from '../utils/axios';
 import { readAllParty } from '../services/party.service';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { socket } from '../services/socket.service';
 
 interface Props {}
 
@@ -40,7 +41,6 @@ const Chat = (props: Props) => {
               }}
               handleShowDetails={(party: any) => {
                 setShowDetail(true);
-
                 setCurrentParty(party);
                 queryClient.invalidateQueries([messagesEndpoint]);
               }}

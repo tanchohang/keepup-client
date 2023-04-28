@@ -1,17 +1,29 @@
 import { io } from 'socket.io-client';
 
-export const socket = io('ws://localhost:3000', {
+export const socket = io('http://localhost:3000/messages', {
+  autoConnect: false,
+  transports: ['websocket'],
   auth(cb) {
-    token: sessionStorage.getItem('accessToken');
+    cb({ token: sessionStorage.accessToken });
   },
-  retries: 5,
-  ackTimeout: 10000,
 });
 
 socket.on('connect_error', (err) => {
-  console.log(err);
+  console.log(err.message);
 });
 
-export function sendMessage(message: string, party: string) {
-  socket.emit('message', { message, party });
+socket.on('connect', () => {
+  console.log('Connect');
+});
+
+socket.on('disconnect', () => {
+  console.log('disconnect');
+});
+
+export function sendMessage(text: string, party: string) {
+  socket.emit('createMessage', { text, party });
+}
+
+export function joinParty(partyId: string) {
+  socket.emit('joinParty', partyId);
 }
