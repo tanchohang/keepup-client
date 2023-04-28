@@ -8,7 +8,7 @@ export const Sidenav = () => {
   const [hidden, setHidden] = useState(false);
   const { setAuth } = useAuth();
   return (
-    <div className="flex flex-col justify-between h-full ">
+    <div className="flex flex-col justify-between h-full">
       <nav className="flex justify-around md:flex-col md:justify-normal md:gap-5 md:p-5 border-r border-zinc-100">
         <ComposedReactAppNavLink title="Activities" link="activities" lucideIcon={<Newspaper size={30} />} hide={hidden} />
         <ComposedReactAppNavLink title="Chats" link="chats" lucideIcon={<MessageCircle size={30} />} hide={hidden} />

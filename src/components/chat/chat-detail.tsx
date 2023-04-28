@@ -31,12 +31,11 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   if (isError) return <span>Error....messages.....</span>;
 
   return (
-    <div className="flex flex-col h-[100vh]">
+    <div className="flex flex-col bg-white md:h-screen h-full">
       <ChatDetailHeader handleShowDetails={handleShowDetails} currentParty={currentParty} />
 
-      <section className="flex flex-col h-[93%]">
+      <section className="flex flex-col h-full overflow-auto">
         <ChatBody messages={messages} currentParty={currentParty} />
-
         <ChatInputForm currentParty={currentParty} />
       </section>
     </div>
@@ -45,7 +44,7 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
 
 const ChatDetailHeader = ({ handleShowDetails, currentParty }: { handleShowDetails: () => void; currentParty: any }) => {
   return (
-    <div className="flex justify-between items-center shadow-md h-[7%] px-5 bg-cyan-500 dark:bg-cyan-800 text-white">
+    <div className="flex justify-between items-center shadow-md px-5 py-3  bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">
         <button onClick={handleShowDetails} className="md:hidden">
           <ChevronLeft size={40} />
@@ -89,7 +88,7 @@ const ChatBody = ({ messages, currentParty }: { messages: any[]; currentParty: a
   if (messages.length === 0) return <div className="flex justify-center items-center h-full">Start chatting with friends</div>;
 
   return (
-    <div className="flex flex-col gap-2 p-5 h-[100%] scroll-auto">
+    <div className="flex flex-col gap-2 p-5 py-16 overflow-auto max-h-screen min-h-[90%] bg-green-200">
       {messages.map((message: any) => (
         <div key={message._id}>
           <ChatBubble isMyMessage={message.sender === auth?.id} message={message.text} />
@@ -125,7 +124,7 @@ const ChatInputForm = ({ currentParty }: { currentParty: any }) => {
   }
 
   return (
-    <div className="flex items-center justify-center shadow-inner h-[10%] px-5 gap-3">
+    <div className="flex items-center justify-center shadow-inner p-3 pb-0 gap-3">
       <div className="flex items-center gap-3">
         <button onClick={handleSendFile}>
           <PlusCircle size={35} className="fill-cyan-500 stroke-white" />

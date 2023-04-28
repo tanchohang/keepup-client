@@ -12,7 +12,7 @@ interface Props {
 const ChatList = ({ handleShowDetails, handleCreateButton, parties }: Props) => {
   return (
     <>
-      <div className="p-5 md:border-r md:border-zinc-100 min-h-full relative">
+      <div className="p-5 md:border-r md:border-zinc-100 md:h-screen h-full relative">
         <ChatListHeader showForm={handleCreateButton} />
         <SearchBar />
         <ChatListBody handleShowDetails={handleShowDetails} parties={parties} />

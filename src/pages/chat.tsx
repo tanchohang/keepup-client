@@ -32,9 +32,9 @@ const Chat = (props: Props) => {
 
   return (
     <ChantMiniContextProvider>
-      <div className="flex md:block">
-        <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(500px,1fr)] w-full">
-          <div className="relative">
+      <div className="flex md:block md:h-screen md:overflow-hidden h-full">
+        <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(500px,1fr)] w-full relative">
+          <div className="relative h-full">
             <ChatList
               handleCreateButton={() => {
                 setShowForm(true);
@@ -52,7 +52,7 @@ const Chat = (props: Props) => {
               </PartyFormContextProvider>
             )}
           </div>
-          <div className={`${showDetail ? 'block' : 'hidden'} absolute bg-white inset-0 md:static md:block`}>
+          <div className={`${showDetail ? 'block' : 'hidden'} absolute inset-0 md:static md:block h-full`}>
             <ChatDetail handleShowDetails={() => setShowDetail(false)} currentParty={currentParty ? currentParty : parties[0]} />
           </div>
         </div>
