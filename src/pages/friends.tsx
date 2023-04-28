@@ -61,7 +61,10 @@ export const Friends = (props: Props) => {
         {data.users.length > 0 ? (
           <ul className="flex flex-col gap-5">
             {data?.users.map((user: any) => (
-              <li key={user.id}>{user.username}</li>
+              <li key={user.id} className="flex">
+                <span>{user.username}</span>
+                {user.client && <span className="rounded-full bg-green-400 w-2 h-2 block"></span>}
+              </li>
             ))}
           </ul>
         ) : (

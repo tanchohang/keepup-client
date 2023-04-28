@@ -1,11 +1,20 @@
 import { Sidenav } from './sidenav';
 import { MobileChatSidenav } from './chat/mobile-chat-sidenav';
 import { Outlet, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { appsocket } from '../services/socket.service';
 
 export const AuthLayout = () => {
   const router = useLocation();
   const path = router.pathname.match(/.+\/chats\/.+/);
   const username = path?.[0]?.split('/')[1];
+
+  useEffect(() => {
+    appsocket.connect();
+    return () => {
+      appsocket.disconnect();
+    };
+  }, []);
 
   return (
     <div className="relative md:h-full min-h-screen max-h-screen">

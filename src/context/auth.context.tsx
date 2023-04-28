@@ -7,6 +7,7 @@ export type AuthUser = {
   email: string;
   accessToken: string;
   circle: string;
+  client?: string;
 };
 
 interface AuthContextType {

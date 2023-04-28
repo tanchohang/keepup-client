@@ -8,11 +8,23 @@ export const socket = io('http://localhost:3000/messages', {
   },
 });
 
+export const appsocket = io('http://localhost:3000', {
+  autoConnect: false,
+  transports: ['websocket'],
+  auth(cb) {
+    cb({ token: sessionStorage.accessToken });
+  },
+});
+
+appsocket.on('connect', () => {
+  appsocket.emit('online');
+});
+
 socket.on('connect_error', (err) => {
   console.log(err.message);
 });
 
-socket.on('connect', () => {
+socket.on('connect', async () => {
   console.log('Connect');
 });
 
