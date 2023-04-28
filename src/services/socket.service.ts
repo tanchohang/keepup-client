@@ -27,3 +27,7 @@ export function sendMessage(text: string, party: string) {
 export function joinParty(partyId: string) {
   socket.emit('joinParty', partyId);
 }
+
+export function typing(pid: string) {
+  socket.emit('typing', pid);
+}

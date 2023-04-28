@@ -4,7 +4,8 @@ import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { messagesEndpoint } from '../../utils/axios';
 import { createMessage, readAllMessage } from '../../services/message.service';
 import useAuth from '../../context/auth.context';
-import { joinParty, sendMessage, socket } from '../../services/socket.service';
+import { joinParty, sendMessage, socket, typing } from '../../services/socket.service';
+import { IsTyping } from './is-typing';
 
 interface Props {
   handleShowDetails: () => void;
@@ -94,6 +95,7 @@ const ChatBody = ({ messages, currentParty }: { messages: any[]; currentParty: a
           <ChatBubble isMyMessage={message.sender === auth?.id} message={message.text} />
         </div>
       ))}
+      <IsTyping />
     </div>
   );
 };
@@ -113,10 +115,8 @@ const ChatInputForm = ({ currentParty }: { currentParty: any }) => {
     throw new Error('Function not implemented.');
   }
 
-  function handleChange(event: ChangeEvent<HTMLTextAreaElement>): void {}
-
-  function handleKeyUp(event: KeyboardEvent<HTMLTextAreaElement>): void {
-    throw new Error('Function not implemented.');
+  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>): void {
+    typing(currentParty._id); //TODO:buffer the typing
   }
 
   function handleSendMessage(event: any): void {
@@ -141,6 +141,7 @@ const ChatInputForm = ({ currentParty }: { currentParty: any }) => {
         placeholder="enter message"
         rows={1}
         className="w-[100%] appearance-none resize-none focus:outline-none bg-slate-100 text-lg p-3 rounded-lg"
+        onKeyDown={handleKeyDown}
         ref={textareatRef}
       />
 
