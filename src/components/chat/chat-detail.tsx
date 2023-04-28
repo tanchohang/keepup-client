@@ -88,7 +88,7 @@ const ChatBody = ({ messages, currentParty }: { messages: any[]; currentParty: a
   if (messages.length === 0) return <div className="flex justify-center items-center h-full">Start chatting with friends</div>;
 
   return (
-    <div className="flex flex-col gap-2 p-5 py-16 overflow-auto max-h-screen min-h-[90%] bg-green-200">
+    <div className="flex flex-col gap-2 p-5 py-16 overflow-auto max-h-screen min-h-[90%]">
       {messages.map((message: any) => (
         <div key={message._id}>
           <ChatBubble isMyMessage={message.sender === auth?.id} message={message.text} />
