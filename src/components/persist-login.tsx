@@ -14,8 +14,8 @@ const PersistLogin = (props: Props) => {
       try {
         const { data } = await refreshAccessToken();
         //   setAuth(userWithToken.data);
-        const { id, username, email, fullname, accessToken, circle, client } = data;
-        setAuth({ id, username, email, fullname, accessToken, circle, client } as AuthUser);
+        const { id, username, email, fullname, accessToken, circle, online } = data;
+        setAuth({ id, username, email, fullname, accessToken, circle, online } as AuthUser);
       } catch (error) {
         console.error(error);
       } finally {

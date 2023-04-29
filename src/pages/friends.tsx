@@ -63,7 +63,7 @@ export const Friends = (props: Props) => {
             {data?.users.map((user: any) => (
               <li key={user.id} className="flex">
                 <span>{user.username}</span>
-                {user.client && <span className="rounded-full bg-green-400 w-2 h-2 block"></span>}
+                {user.online && <span className="rounded-full bg-green-400 w-2 h-2 block"></span>}
               </li>
             ))}
           </ul>
