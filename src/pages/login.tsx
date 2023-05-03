@@ -30,6 +30,7 @@ const Login = () => {
           fullname: resData.fullname,
           accessToken: resData.accessToken,
           circle: resData.circle,
+          online: resData.online,
         };
 
         setAuth(user);
@@ -82,7 +83,6 @@ const Login = () => {
           <button type="submit" className=" hover:opacity-90 shadow-lg bg-white text-cyan-500 w-[100px] h-[50px]">
             Login
           </button>
-          or{' '}
           <Link to="/signup" className="underline">
             Signup
           </Link>

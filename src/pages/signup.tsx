@@ -27,6 +27,7 @@ const Signup = () => {
           accessToken: resData.accessToken,
           id: resData.id,
           circle: resData.circle,
+          online: resData.online,
         });
       }
     } catch (error) {
