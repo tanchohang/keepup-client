@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { keepupApiAxiosInstance, partiesEndpoint } from '../utils/axios';
-import { Party } from '../reducers/party.reducer';
 
 const Schema = z.array(
   z.object({
