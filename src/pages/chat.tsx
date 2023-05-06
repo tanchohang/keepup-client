@@ -31,33 +31,31 @@ const Chat = (props: Props) => {
   if (!data) return <span>Create a new chat and add friends</span>;
 
   return (
-    <ChantMiniContextProvider>
-      <div className="flex md:block md:h-screen md:overflow-hidden h-full">
-        <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(500px,1fr)] w-full relative">
-          <div className="relative h-full">
-            <ChatList
-              handleCreateButton={() => {
-                setShowForm(true);
-              }}
-              handleShowDetails={(party: any) => {
-                setShowDetail(true);
-                setCurrentParty(party);
-                queryClient.invalidateQueries([messagesEndpoint]);
-              }}
-              parties={parties}
-            />
-            {showForm && (
-              <PartyFormContextProvider>
-                <CreatePartyForm className="absolute inset-0 p-5 z-50 bg-white" onCancel={() => setShowForm(false)} />
-              </PartyFormContextProvider>
-            )}
-          </div>
-          <div className={`${showDetail ? 'block' : 'hidden'} absolute inset-0 md:static md:block h-full`}>
-            <ChatDetail handleShowDetails={() => setShowDetail(false)} currentParty={currentParty ? currentParty : parties[0]} />
-          </div>
+    <div className="flex md:block md:h-screen md:overflow-hidden h-full">
+      <div className=" grid md:grid-cols-[minmax(max-content,40%),minmax(500px,1fr)] w-full relative">
+        <div className="relative h-full">
+          <ChatList
+            handleCreateButton={() => {
+              setShowForm(true);
+            }}
+            handleShowDetails={(party: any) => {
+              setShowDetail(true);
+              setCurrentParty(party);
+              queryClient.invalidateQueries([messagesEndpoint]);
+            }}
+            parties={parties}
+          />
+          {showForm && (
+            <PartyFormContextProvider>
+              <CreatePartyForm className="absolute inset-0 p-5 z-50 bg-white" onCancel={() => setShowForm(false)} />
+            </PartyFormContextProvider>
+          )}
+        </div>
+        <div className={`${showDetail ? 'block' : 'hidden'} absolute inset-0 md:static md:block h-full`}>
+          <ChatDetail handleShowDetails={() => setShowDetail(false)} currentParty={currentParty ? currentParty : parties[0]} />
         </div>
       </div>
-    </ChantMiniContextProvider>
+    </div>
   );
 };
 
