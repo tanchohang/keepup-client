@@ -1,13 +1,11 @@
 import { ChatDetail } from '../components/chat/chat-detail';
 import { ChatList } from '../components/chat/chat-list';
 import { useState } from 'react';
-import { ChantMiniContextProvider } from '../context/chat-mini.context';
 import { PartyFormContextProvider } from '../context/create-party-form.context';
 import { CreatePartyForm } from '../components/chat/create-party-form';
 import { messagesEndpoint, partiesEndpoint } from '../utils/axios';
 import { readAllParty } from '../services/party.service';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { socket } from '../services/socket.service';
 
 interface Props {}
 
