@@ -13,7 +13,7 @@ const PersistLogin = (props: Props) => {
     const getAccessToken = async () => {
       try {
         const { data } = await refreshAccessToken();
-        //   setAuth(userWithToken.data);
+
         const { id, username, email, fullname, accessToken, circle, online } = data;
         setAuth({ id, username, email, fullname, accessToken, circle, online } as AuthUser);
       } catch (error) {
@@ -25,9 +25,6 @@ const PersistLogin = (props: Props) => {
     !auth?.accessToken && refreshToken ? getAccessToken() : setIsLoading(false);
   }, []);
 
-  //   useEffect(() => {
-  //     console.log(auth);
-  //   }, [isLoading]);
   return isLoading ? <div>...Loading</div> : <Outlet />;
 };
 export default PersistLogin;
