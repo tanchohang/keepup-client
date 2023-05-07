@@ -14,7 +14,7 @@ export const AuthLayout = () => {
     return () => {
       appsocket.disconnect();
     };
-  }, []);
+  }, [sessionStorage.getItem('accessToken')]);
 
   return (
     <div className="relative md:h-full min-h-screen max-h-screen">
