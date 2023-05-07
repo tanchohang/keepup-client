@@ -59,11 +59,11 @@ export const keepupApiAxiosInstance = (endpoint: string) => {
             originalConfig.headers['Authorization'] = `Bearer ${accessToken}`;
             return instance(originalConfig);
           } catch (_error: any) {
-            if (_error.response.status === 498) {
-              localStorage.clear();
-              sessionStorage.clear();
-              window.location.reload();
-            }
+            // if (_error.response.status === 498 || _error.response.status === 401) {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.reload();
+            // }
           }
         }
       }
