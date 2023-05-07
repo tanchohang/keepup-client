@@ -8,6 +8,7 @@ export type AuthUser = {
   accessToken: string;
   circle: string;
   online: string;
+  peerConnectionId?: string;
 };
 
 interface AuthContextType {
