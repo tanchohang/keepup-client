@@ -19,7 +19,7 @@ export const IsTyping = (props: Props) => {
     };
   }, []);
 
-  return isTyping && username !== auth?.username ? (
+  return isTyping && username ? (
     <div className="text-zinc-400 italic animate-bounce">
       {username} is typing<span>...</span>
     </div>
