@@ -1,11 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
-import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { messagesEndpoint } from '../../utils/axios';
-import { createMessage, readAllMessage } from '../../services/message.service';
+import { readAllMessage } from '../../services/message.service';
 import useAuth from '../../context/auth.context';
 import { joinParty, sendMessage, socket, typing } from '../../services/socket.service';
 import { IsTyping } from './is-typing';
+import { OutgoingCall } from './outgoing-call';
+import { PeerConnection as pc } from '../../services/webrtc.service';
+import { IncommingCall } from './incoming-call';
+import { AuthUser } from '../../context/auth.context';
+import { useChatStore } from '../../store/chatStore';
 
 interface Props {
   handleShowDetails: () => void;
@@ -13,6 +18,11 @@ interface Props {
 }
 const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   const [messages, setMessages] = useState<any>([]);
+  const [isOutgoing, setIsOutgoing] = useState<boolean>(false);
+  const [videoCall, setVideoCall] = useState<boolean>(false);
+  const { setPeerCon } = useChatStore();
+  const peerRef = useRef();
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [messagesEndpoint, currentParty?._id],
@@ -26,23 +36,127 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
     refetchIntervalInBackground: true,
   });
 
+  useEffect(() => {
+    socket.connect();
+
+    useChatStore.subscribe((state) => (peerRef.current = state.peerCon));
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    joinParty(currentParty?._id);
+
+    socket.on('broadcastParty', (data: any) => {
+      queryClient.invalidateQueries([messagesEndpoint, currentParty._id]);
+    });
+
+    socket.on('incomingCall', async (res: any) => {
+      if (!pc.currentRemoteDescription && res) {
+        await pc.setRemoteDescription(new RTCSessionDescription(res.offer));
+        console.log('offerDescription', pc.remoteDescription);
+
+        setVideoCall(true);
+        setIsOutgoing(false);
+      }
+    });
+    socket.on('onOfferCandidates', (res: Array<any>) => {
+      console.log('onOfferCandidates', res);
+      res.forEach((c: any) => {
+        const candidate = new RTCIceCandidate(c);
+        pc.addIceCandidate(candidate);
+      });
+    });
+    socket.on('onAnswer', async (res: any) => {
+      if (!pc.currentRemoteDescription && res) {
+        await pc.setRemoteDescription(new RTCSessionDescription(res));
+        console.log('answerDescription', pc.remoteDescription);
+      }
+    });
+
+    socket.on('onAnswerCandidates', (res: Array<any>) => {
+      console.log('onAnswerCandidates', res);
+      res.forEach((c: any) => {
+        const candidate = new RTCIceCandidate(c);
+        pc.addIceCandidate(candidate);
+      });
+    });
+  }, [currentParty]);
+
+  async function VideoCallHandler() {
+    // pc.onicegatheringstatechange = (e: any) => {
+    //   let connection = e.target;
+    //   switch (connection.iceGatheringState) {
+    //     case 'gathering':
+    //       /* collection of candidates has begun */
+
+    //       break;
+    //     case 'complete':
+    //       /* collection of candidates is finished */
+    //       console.log('complete');
+    //       socket.emit('setOfferCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
+
+    //       break;
+    //   }
+    // };
+    pc.createOffer()
+      .then((offer) => pc.setLocalDescription(offer))
+      .then(() => {
+        socket.emit('call', { pid: currentParty._id, offer: pc.localDescription }, (res: any) => {});
+      });
+    setIsOutgoing(true);
+    setVideoCall(true);
+  }
+
+  function cancelVideoCallHandler(): void {
+    // localStream.getTracks().forEach((track) => {
+    //   if (track.enabled) {
+    //     track.stop();
+    //     track.enabled = false;
+    //   }
+    // });
+
+    setIsOutgoing(false);
+    setVideoCall(false);
+  }
+
   if (!currentParty) return <span>Create a Chat Group</span>;
   if (isLoading) return <span>Loading....messages....</span>;
   if (isError) return <span>Error....messages.....</span>;
 
   return (
-    <div className="flex flex-col bg-white md:h-screen h-full">
-      <ChatDetailHeader handleShowDetails={handleShowDetails} currentParty={currentParty} />
+    <div className="flex flex-col bg-white md:h-screen h-full relative">
+      <ChatDetailHeader handleShowDetails={handleShowDetails} currentParty={currentParty} handleVideoCall={VideoCallHandler} />
 
       <section className="flex flex-col h-full overflow-auto">
         <ChatBody messages={messages} currentParty={currentParty} />
         <ChatInputForm currentParty={currentParty} />
       </section>
+
+      {videoCall && (
+        <section className="absolute inset-0">
+          {isOutgoing ? (
+            <OutgoingCall handleCancelVideoCall={cancelVideoCallHandler} currentParty={currentParty} />
+          ) : (
+            <IncommingCall handleCancelVideoCall={cancelVideoCallHandler} currentParty={currentParty} />
+          )}
+        </section>
+      )}
     </div>
   );
 };
 
-const ChatDetailHeader = ({ handleShowDetails, currentParty }: { handleShowDetails: () => void; currentParty: any }) => {
+const ChatDetailHeader = ({
+  handleShowDetails,
+  currentParty,
+  handleVideoCall,
+}: {
+  handleShowDetails: () => void;
+  handleVideoCall: () => void;
+  currentParty: any;
+}) => {
   return (
     <div className="flex justify-between items-center shadow-md px-5 py-3  bg-cyan-500 dark:bg-cyan-800 text-white">
       <div className="flex items-center gap-3">
@@ -57,7 +171,7 @@ const ChatDetailHeader = ({ handleShowDetails, currentParty }: { handleShowDetai
           <Phone size={30} className="fill-white stroke-none" />
         </button>
 
-        <button>
+        <button onClick={handleVideoCall}>
           <VideoIcon size={30} className="fill-white stroke-white" />
         </button>
         <button>
@@ -70,20 +184,6 @@ const ChatDetailHeader = ({ handleShowDetails, currentParty }: { handleShowDetai
 
 const ChatBody = ({ messages, currentParty }: { messages: any[]; currentParty: any }) => {
   const { auth } = useAuth();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    socket.connect();
-    joinParty(currentParty._id);
-
-    socket.on('broadcastParty', (data: any) => {
-      queryClient.invalidateQueries([messagesEndpoint, currentParty._id]);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [currentParty]);
 
   if (messages.length === 0) return <div className="flex justify-center items-center h-full">Start chatting with friends</div>;
 

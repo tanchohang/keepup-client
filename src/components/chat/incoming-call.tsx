@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { PeerConnection as pc } from '../../services/webrtc.service';
+import { getLocalStream, PeerConnection as pc } from '../../services/webrtc.service';
 import { hangup, socket } from '../../services/socket.service';
 import { Phone, PhoneOff } from 'lucide-react';
 import { CallControls } from './call-controls';
@@ -7,26 +7,30 @@ import useAuth, { AuthUser } from '../../context/auth.context';
 
 interface Props {
   handleCancelVideoCall: () => void;
+  currentParty: any;
 }
-export const IncommingCall = ({ handleCancelVideoCall }: Props) => {
+export const IncommingCall = ({ handleCancelVideoCall, currentParty }: Props) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-
-  const { auth, setAuth } = useAuth();
+  const icecandidates: RTCIceCandidate[] = [];
 
   let localStream: MediaStream;
   let remoteStream: MediaStream;
 
   useEffect(() => {
     async function setRef() {
-      localStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
-      remoteStream = new MediaStream();
-
+      localStream = await getLocalStream();
       localStream.getTracks().forEach((t) => {
         pc.addTrack(t, localStream);
       });
-
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          icecandidates.push(e.candidate);
+        } else {
+          socket.emit('setAnswerCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
+        }
+      };
       pc.ontrack = (e) => {
         e.streams[0].getTracks().forEach((t) => {
           remoteStream.addTrack(t);
@@ -35,27 +39,35 @@ export const IncommingCall = ({ handleCancelVideoCall }: Props) => {
           remoteVideoRef.current!.srcObject = remoteStream;
         }
       };
-
       if (remoteVideoRef.current) {
         localVideoRef.current!.srcObject = localStream;
       }
-
-      setLoading(false);
-      //   }
     }
     setRef();
     return () => {};
   });
 
   async function handleAnswerCall() {
-    socket.on('onOffer', async (res: any) => {
-      if (!pc.currentRemoteDescription && res) {
-        await pc.setRemoteDescription(new RTCSessionDescription(res.offer));
-        setAuth({ peerConnectionId: res.peer, ...auth } as AuthUser);
-      }
-    });
-    const answer = await pc.createAnswer();
-    setLoading(false);
+    // pc.onicegatheringstatechange = (e: any) => {
+    //   let connection = e.target;
+    //   switch (connection.iceGatheringState) {
+    //     case 'gathering':
+    //       /* collection of candidates has begun */
+    //       break;
+    //     case 'complete':
+    //       /* collection of candidates is finished */
+    //       socket.emit('setAnswerCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
+
+    //       break;
+    //   }
+    // };
+    pc.createAnswer()
+      .then((answer) => pc.setLocalDescription(answer))
+      .then(() => {
+        socket.emit('setAnswer', { id: currentParty._id, answer: pc.localDescription }, (res: any) => {
+          setLoading(false);
+        });
+      });
   }
 
   return (
@@ -71,13 +83,13 @@ export const IncommingCall = ({ handleCancelVideoCall }: Props) => {
               className="rounded-full p-2 outline outline-1 bg-red-400"
               onClick={() => {
                 //TODO:: hangup()
-                localStream.getTracks().forEach((track) => {
-                  if (track.enabled) {
-                    track.stop();
-                    track.enabled = false;
-                  }
-                });
-                localVideoRef.current!.srcObject = null;
+                // localStream.getTracks().forEach((track) => {
+                //   if (track.enabled) {
+                //     track.stop();
+                //     track.enabled = false;
+                //   }
+                // });
+                // localVideoRef.current!.srcObject = null;
                 handleCancelVideoCall();
               }}
             >

@@ -15,7 +15,11 @@
 //   }
 // };
 
+export const getLocalStream = async () => {
+  return await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+};
+
 export const PeerConnection = new RTCPeerConnection({
-  iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun3.l.google.com:19302'] } as RTCIceServer],
+  iceServers: [{ urls: ['stun:stun1.l.google.com:19302'] } as RTCIceServer],
   iceCandidatePoolSize: 10,
 });
