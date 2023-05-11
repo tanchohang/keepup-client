@@ -18,17 +18,6 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
-    // navigator.mediaDevices
-    //   .getUserMedia({ video: true })
-    //   .then((stream) => {
-    //     setLocalStream(stream);
-    //   })
-    //   .catch((error) => {
-    //     console.log('Error accessing media devices:', error);
-    //   });
-  }, []);
-
-  useEffect(() => {
     if (localStream) {
       pc.ontrack = (event) => {
         console.log('Received remote stream track:', event.streams[0]);

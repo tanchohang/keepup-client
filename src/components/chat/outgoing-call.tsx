@@ -19,16 +19,7 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const ansref = useRef<any>(null);
 
-  useEffect(() => {
-    // navigator.mediaDevices
-    //   .getUserMedia({ video: true })
-    //   .then((stream) => {
-    //     setLocalStream(stream);
-    //   })
-    //   .catch((error) => {
-    //     console.log('Error accessing media devices:', error);
-    //   });
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     socket.on('onAnswer', (answer) => {
@@ -60,18 +51,6 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
           });
       }
     });
-    // socket.on('onAnswerCandidates', (candidates: any[]) => {
-    //   console.log('Received ICE candidate:');
-    //   candidates.forEach((candidate) => {
-    //     pc.addIceCandidate(new RTCIceCandidate(candidate))
-    //       .then(() => {
-    //         console.log('icecandidate added to connection');
-    //       })
-    //       .catch((error) => {
-    //         console.log('Error adding ICE candidate:', error);
-    //       });
-    //   });
-    // });
 
     if (localStream) {
       localVideoRef.current!.srcObject = localStream;
