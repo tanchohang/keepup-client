@@ -9,13 +9,12 @@ interface Props {
   currentParty: any;
   offer: any;
   iceCandidates: any[];
-  localStream: MediaStream;
 }
-export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceCandidates, localStream }: Props) => {
+export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceCandidates }: Props) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  // const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
@@ -51,46 +50,52 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
 
   async function handleAnswerCall() {
     console.log('handleAnswerCall');
-    if (localStream) {
-      localStream!.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((localStream) => {
+        setLocalStream(localStream);
+        localStream!.getTracks().forEach((track) => {
+          pc.addTrack(track, localStream);
+        });
+        let icecandidateArr: RTCIceCandidate[] = [];
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate) {
+            icecandidateArr.push(event.candidate);
+          } else {
+            console.log('sendicecandidate', icecandidateArr);
+            socket.emit('setAnswerCandidates', { id: currentParty, candidates: icecandidateArr });
+          }
+        };
+
+        pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
+          console.log('Successfully set offer description');
+          pc.createAnswer()
+            .then((answer) => pc.setLocalDescription(answer))
+            .then(() => {
+              if (pc.remoteDescription && pc.localDescription && iceCandidates.length > 0) {
+                console.log('adding candidates');
+
+                iceCandidates.forEach((candidate) => {
+                  pc.addIceCandidate(candidate)
+                    .then(() => {
+                      'icecandidate added successfully';
+                    })
+                    .catch((error) => {
+                      console.error('Error adding ICE candidate:', error);
+                    });
+                });
+              }
+              socket.emit('setAnswer', { id: currentParty, answer: pc.localDescription }, (res: any) => {});
+            })
+            .catch((err) => {
+              console.log('error creating answer', err);
+            });
+        });
+      })
+      .catch((error) => {
+        console.log('Error accessing media devices:', error);
       });
-      let icecandidateArr: RTCIceCandidate[] = [];
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          icecandidateArr.push(event.candidate);
-        } else {
-          console.log('sendicecandidate', icecandidateArr);
-          socket.emit('setAnswerCandidates', { id: currentParty, candidates: icecandidateArr });
-        }
-      };
-
-      pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
-        console.log('Successfully set offer description');
-        pc.createAnswer()
-          .then((answer) => pc.setLocalDescription(answer))
-          .then(() => {
-            if (pc.remoteDescription && pc.localDescription && iceCandidates.length > 0) {
-              console.log('adding candidates');
-
-              iceCandidates.forEach((candidate) => {
-                pc.addIceCandidate(candidate)
-                  .then(() => {
-                    'icecandidate added successfully';
-                  })
-                  .catch((error) => {
-                    console.error('Error adding ICE candidate:', error);
-                  });
-              });
-            }
-            socket.emit('setAnswer', { id: currentParty, answer: pc.localDescription }, (res: any) => {});
-          })
-          .catch((err) => {
-            console.log('error creating answer', err);
-          });
-      });
-    }
   }
 
   return (

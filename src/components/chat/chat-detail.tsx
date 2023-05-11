@@ -38,21 +38,6 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   });
 
   useEffect(() => {
-    socket.connect();
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        setLocalStream(stream);
-      })
-      .catch((error) => {
-        console.log('Error accessing media devices:', error);
-      });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
     joinParty(currentParty?._id);
 
     socket.on('incomingCall', ({ peer, offer }: any) => {
@@ -79,32 +64,38 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   }, [currentParty]);
 
   async function VideoCallHandler() {
-    if (localStream) {
-      let icecandidates: RTCIceCandidate[] = [];
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((localStream) => {
+        setLocalStream(localStream);
+        let icecandidates: RTCIceCandidate[] = [];
 
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
-      });
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          icecandidates.push(event.candidate);
-        } else {
-          console.log('sending icecandidates', icecandidates);
-          socket.emit('setOfferCandidates', { id: currentParty, candidates: icecandidates });
-        }
-      };
-
-      pc.createOffer()
-        .then((resOffer: any) => pc.setLocalDescription(resOffer))
-        .then(() => {
-          socket.emit('call', { pid: currentParty, offer: pc.localDescription }, (res: any) => {
-            console.log('offer success');
-          });
+        localStream.getTracks().forEach((track) => {
+          pc.addTrack(track, localStream);
         });
-      setIsOutgoing(true);
-      setVideoCall(true);
-    }
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate) {
+            icecandidates.push(event.candidate);
+          } else {
+            console.log('sending icecandidates', icecandidates);
+            socket.emit('setOfferCandidates', { id: currentParty, candidates: icecandidates });
+          }
+        };
+
+        pc.createOffer()
+          .then((resOffer: any) => pc.setLocalDescription(resOffer))
+          .then(() => {
+            socket.emit('call', { pid: currentParty, offer: pc.localDescription }, (res: any) => {
+              console.log('offer success');
+            });
+          });
+        setIsOutgoing(true);
+        setVideoCall(true);
+      })
+      .catch((error) => {
+        console.log('Error accessing media devices:', error);
+      });
   }
 
   function cancelVideoCallHandler(): void {
@@ -141,7 +132,6 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
               handleCancelVideoCall={cancelVideoCallHandler}
               offer={offer}
               iceCandidates={iceCandidates}
-              localStream={localStream!}
             />
           )}
         </section>
