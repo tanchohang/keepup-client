@@ -8,25 +8,26 @@ interface Props {
   handleCancelVideoCall: () => void;
   currentParty: any;
   iceCandidates: any;
+  localStream: MediaStream;
 }
-export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidates }: Props) => {
+export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidates, localStream }: Props) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const { auth, setAuth } = useAuth();
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  // const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const ansref = useRef<any>(null);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        setLocalStream(stream);
-      })
-      .catch((error) => {
-        console.log('Error accessing media devices:', error);
-      });
+    // navigator.mediaDevices
+    //   .getUserMedia({ video: true })
+    //   .then((stream) => {
+    //     setLocalStream(stream);
+    //   })
+    //   .catch((error) => {
+    //     console.log('Error accessing media devices:', error);
+    //   });
   }, []);
 
   useEffect(() => {
@@ -73,39 +74,19 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
     // });
 
     if (localStream) {
-      let icecandidates: RTCIceCandidate[] = [];
-
       localVideoRef.current!.srcObject = localStream;
 
       pc.ontrack = (event) => {
-        console.log('Received remote stream:', event.streams);
+        console.log('Received remote stream track:', event.streams[0]);
         setRemoteStream(event.streams[0]);
+        setLoading(false);
+      };
+      if (remoteVideoRef.current) {
         remoteVideoRef.current!.srcObject = remoteStream;
-      };
-
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track);
-      });
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          icecandidates.push(event.candidate);
-        } else {
-          console.log('sending icecandidates', icecandidates);
-          socket.emit('setOfferCandidates', { id: currentParty, candidates: icecandidates });
-        }
-      };
-
-      pc.createOffer()
-        .then((resOffer: any) => pc.setLocalDescription(resOffer))
-        .then(() => {
-          socket.emit('call', { pid: currentParty, offer: pc.localDescription }, (res: any) => {
-            console.log('offer success');
-          });
-        });
+      }
     }
     return () => {};
-  }, [currentParty, localStream]);
+  }, [currentParty, localStream, remoteStream]);
 
   return (
     <div className="h-full w-full bg-black relative flex justify-center items-center text-white">
@@ -119,11 +100,11 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
           <CallControls handleCancelVideoCall={handleCancelVideoCall} />
         </div>
       ) : (
-        <>
-          <video className="w-[200px] h-[150px] bg-black outline outline-1 absolute right-10 bottom-10" autoPlay playsInline ref={remoteVideoRef} />
-          <video className="w-[200px] h-[150px] bg-black outline outline-1 absolute right-10 bottom-10" autoPlay playsInline ref={localVideoRef} />
+        <div>
+          <video className="w-[200px] h-[150px] bg-black outline outline-1 " autoPlay playsInline ref={remoteVideoRef} />
+          <video className="w-[200px] h-[150px] bg-black outline outline-1 " autoPlay playsInline ref={localVideoRef} />
           <CallControls handleCancelVideoCall={handleCancelVideoCall} />
-        </>
+        </div>
       )}
     </div>
   );

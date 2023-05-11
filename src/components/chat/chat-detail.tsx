@@ -23,6 +23,7 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   const queryClient = useQueryClient();
   const [offer, setOffer] = useState(null);
   const [iceCandidates, setIceCandidates] = useState<any>([]);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [messagesEndpoint, currentParty?._id],
@@ -38,6 +39,14 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
 
   useEffect(() => {
     socket.connect();
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        setLocalStream(stream);
+      })
+      .catch((error) => {
+        console.log('Error accessing media devices:', error);
+      });
     return () => {
       socket.disconnect();
     };
@@ -70,8 +79,32 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   }, [currentParty]);
 
   async function VideoCallHandler() {
-    setIsOutgoing(true);
-    setVideoCall(true);
+    if (localStream) {
+      let icecandidates: RTCIceCandidate[] = [];
+
+      localStream.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          icecandidates.push(event.candidate);
+        } else {
+          console.log('sending icecandidates', icecandidates);
+          socket.emit('setOfferCandidates', { id: currentParty, candidates: icecandidates });
+        }
+      };
+
+      pc.createOffer()
+        .then((resOffer: any) => pc.setLocalDescription(resOffer))
+        .then(() => {
+          socket.emit('call', { pid: currentParty, offer: pc.localDescription }, (res: any) => {
+            console.log('offer success');
+          });
+        });
+      setIsOutgoing(true);
+      setVideoCall(true);
+    }
   }
 
   function cancelVideoCallHandler(): void {
@@ -96,13 +129,19 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
       {videoCall && (
         <section className="absolute inset-0 bg-black">
           {isOutgoing ? (
-            <OutgoingCall currentParty={currentParty._id} handleCancelVideoCall={cancelVideoCallHandler} iceCandidates={iceCandidates} />
+            <OutgoingCall
+              currentParty={currentParty._id}
+              handleCancelVideoCall={cancelVideoCallHandler}
+              iceCandidates={iceCandidates}
+              localStream={localStream!}
+            />
           ) : (
             <IncommingCall
               currentParty={currentParty._id}
               handleCancelVideoCall={cancelVideoCallHandler}
               offer={offer}
               iceCandidates={iceCandidates}
+              localStream={localStream!}
             />
           )}
         </section>
