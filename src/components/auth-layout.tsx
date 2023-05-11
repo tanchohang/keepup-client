@@ -2,7 +2,7 @@ import { Sidenav } from './sidenav';
 import { MobileChatSidenav } from './chat/mobile-chat-sidenav';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
-import { appsocket } from '../services/socket.service';
+import { socket } from '../services/socket.service';
 
 export const AuthLayout = () => {
   const router = useLocation();
@@ -10,11 +10,12 @@ export const AuthLayout = () => {
   const username = path?.[0]?.split('/')[1];
 
   useEffect(() => {
-    appsocket.connect();
+    socket.connect();
+
     return () => {
-      appsocket.disconnect();
+      socket.disconnect();
     };
-  }, [sessionStorage.getItem('accessToken')]);
+  }, []);
 
   return (
     <div className="relative md:h-full min-h-screen max-h-screen">

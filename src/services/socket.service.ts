@@ -1,14 +1,6 @@
 import { io } from 'socket.io-client';
 
-export const socket = io('http://localhost:3000/messages', {
-  autoConnect: false,
-  transports: ['websocket'],
-  auth(cb) {
-    cb({ token: sessionStorage.getItem('accessToken') });
-  },
-});
-
-export const appsocket = io('http://localhost:3000', {
+export const socket = io('http://localhost:3000', {
   autoConnect: false,
   transports: ['websocket'],
   auth(cb) {
@@ -18,16 +10,13 @@ export const appsocket = io('http://localhost:3000', {
 
 //Lifecycle Events
 
-appsocket.on('connect', () => {
-  appsocket.emit('online');
-});
-
 socket.on('connect_error', (err) => {
   console.log(err.message);
 });
 
 socket.on('connect', async () => {
   console.log('Connect');
+  socket.emit('online');
 });
 
 socket.on('disconnect', () => {
