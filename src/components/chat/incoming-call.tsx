@@ -20,7 +20,7 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
   useEffect(() => {
     if (localStream) {
       pc.ontrack = (event) => {
-        console.log('Received remote stream track:', event.streams[0]);
+        console.log('Received remote stream track:');
         setRemoteStream(event.streams[0]);
         setLoading(false);
       };
@@ -68,13 +68,14 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
                 iceCandidates.forEach((candidate) => {
                   pc.addIceCandidate(candidate)
                     .then(() => {
-                      'icecandidate added successfully';
+                      console.log('icecandidate added successfully');
                     })
                     .catch((error) => {
                       console.error('Error adding ICE candidate:', error);
                     });
                 });
               }
+
               socket.emit('setAnswer', { id: currentParty, answer: pc.localDescription }, (res: any) => {});
             })
             .catch((err) => {
@@ -99,14 +100,8 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
             <button
               className="rounded-full p-2 outline outline-1 bg-red-400"
               onClick={() => {
-                //TODO:: hangup()
-                // localStream.getTracks().forEach((track) => {
-                //   if (track.enabled) {
-                //     track.stop();
-                //     track.enabled = false;
-                //   }
-                // });
-                // localVideoRef.current!.srcObject = null;
+                // TODO:: hangup()
+
                 handleCancelVideoCall();
               }}
             >
@@ -121,7 +116,20 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
         <div className="flex flex-col gap-5">
           <video className="w-[200px] h-[150px] bg-black outline outline-1" autoPlay playsInline ref={remoteVideoRef} />
           <video className="w-[200px] h-[150px] bg-black outline outline-1" autoPlay playsInline ref={localVideoRef} />
-          <CallControls handleCancelVideoCall={handleCancelVideoCall} />
+          <CallControls
+            handleCancelVideoCall={() => {
+              localStream!.getTracks().forEach((track) => {
+                if (track.enabled) {
+                  track.stop();
+                  track.enabled = false;
+                }
+              });
+
+              localVideoRef.current!.srcObject = null;
+              remoteVideoRef.current!.srcObject = null;
+              handleCancelVideoCall();
+            }}
+          />
         </div>
       )}
     </div>

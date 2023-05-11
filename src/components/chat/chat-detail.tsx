@@ -99,6 +99,13 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   }
 
   function cancelVideoCallHandler(): void {
+    if (localStream) {
+      console.log('Cancelling');
+      localStream.getTracks().forEach((track) => {
+        track.enabled = false;
+        track.stop();
+      });
+    }
     setIsOutgoing(false);
     setVideoCall(false);
     socket.emit('removePeer', { id: currentParty._id });

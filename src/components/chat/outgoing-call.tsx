@@ -15,7 +15,7 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const { auth, setAuth } = useAuth();
-  // const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const ansref = useRef<any>(null);
 
@@ -23,28 +23,24 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
 
   useEffect(() => {
     socket.on('onAnswer', (answer) => {
-      console.log('Received answer from client:');
+      console.log('Received answer from client:', pc.signalingState);
 
-      if (pc.localDescription && !pc.remoteDescription && !ansref.current) {
+      if (pc.localDescription && !pc.currentLocalDescription && !ansref.current) {
         console.log('localDescription persent');
         ansref.current = answer;
-        console.log(ansref.current);
-        pc.setRemoteDescription(new RTCSessionDescription(answer))
+        pc.setRemoteDescription(new RTCSessionDescription(ansref.current))
           .then(() => {
-            if (pc.remoteDescription && pc.localDescription && iceCandidates.length > 0) {
-              console.log('successfully set anser description');
-              console.log('adding icecandidates');
-              console.log(iceCandidates);
-              iceCandidates.forEach((candidate: any) => {
-                pc.addIceCandidate(new RTCIceCandidate(candidate))
-                  .then(() => {
-                    'icecandidate added';
-                  })
-                  .catch((error) => {
-                    console.log('Error adding ICE candidate:', error);
-                  });
-              });
-            }
+            console.log('successfully set anser description');
+            console.log('adding icecandidates');
+            iceCandidates.forEach((candidate: any) => {
+              pc.addIceCandidate(new RTCIceCandidate(candidate))
+                .then(() => {
+                  'icecandidate added';
+                })
+                .catch((error) => {
+                  console.log('Error adding ICE candidate:', error);
+                });
+            });
           })
           .catch((error) => {
             console.error('Error setting remote description:', error);
@@ -56,7 +52,7 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
       localVideoRef.current!.srcObject = localStream;
 
       pc.ontrack = (event) => {
-        console.log('Received remote stream track:', event.streams[0]);
+        console.log('Received remote stream track:');
         setRemoteStream(event.streams[0]);
         setLoading(false);
       };
