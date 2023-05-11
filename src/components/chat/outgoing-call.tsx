@@ -1,70 +1,111 @@
 import { useEffect, useRef, useState } from 'react';
-import { getLocalStream, PeerConnection as pc } from '../../services/webrtc.service';
-import { call, socket } from '../../services/socket.service';
+import { PeerConnection as pc } from '../../services/webrtc.service';
+import { socket } from '../../services/socket.service';
 import { CallControls } from './call-controls';
 import useAuth, { AuthUser } from '../../context/auth.context';
 
 interface Props {
   handleCancelVideoCall: () => void;
   currentParty: any;
+  iceCandidates: any;
 }
-export const OutgoingCall = ({ handleCancelVideoCall, currentParty }: Props) => {
+export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidates }: Props) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const { auth, setAuth } = useAuth();
-  let localStream: MediaStream;
-  let remoteStream: MediaStream;
-  const icecandidates: RTCIceCandidate[] = [];
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const ansref = useRef<any>(null);
 
   useEffect(() => {
-    async function setRef() {
-      localStream = await getLocalStream();
-      remoteStream = new MediaStream();
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        setLocalStream(stream);
+      })
+      .catch((error) => {
+        console.log('Error accessing media devices:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    socket.on('onAnswer', (answer) => {
+      console.log('Received answer from client:');
+
+      if (pc.localDescription && !pc.remoteDescription && !ansref.current) {
+        console.log('localDescription persent');
+        ansref.current = answer;
+        console.log(ansref.current);
+        pc.setRemoteDescription(new RTCSessionDescription(answer))
+          .then(() => {
+            if (pc.remoteDescription && pc.localDescription && iceCandidates.length > 0) {
+              console.log('successfully set anser description');
+              console.log('adding icecandidates');
+              console.log(iceCandidates);
+              iceCandidates.forEach((candidate: any) => {
+                pc.addIceCandidate(new RTCIceCandidate(candidate))
+                  .then(() => {
+                    'icecandidate added';
+                  })
+                  .catch((error) => {
+                    console.log('Error adding ICE candidate:', error);
+                  });
+              });
+            }
+          })
+          .catch((error) => {
+            console.error('Error setting remote description:', error);
+          });
+      }
+    });
+    // socket.on('onAnswerCandidates', (candidates: any[]) => {
+    //   console.log('Received ICE candidate:');
+    //   candidates.forEach((candidate) => {
+    //     pc.addIceCandidate(new RTCIceCandidate(candidate))
+    //       .then(() => {
+    //         console.log('icecandidate added to connection');
+    //       })
+    //       .catch((error) => {
+    //         console.log('Error adding ICE candidate:', error);
+    //       });
+    //   });
+    // });
+
+    if (localStream) {
+      let icecandidates: RTCIceCandidate[] = [];
+
+      localVideoRef.current!.srcObject = localStream;
+
+      pc.ontrack = (event) => {
+        console.log('Received remote stream:', event.streams);
+        setRemoteStream(event.streams[0]);
+        remoteVideoRef.current!.srcObject = remoteStream;
+      };
 
       localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+        pc.addTrack(track);
       });
 
-      pc.onicecandidate = async (e) => {
-        if (e.candidate) {
-          icecandidates.push(e.candidate);
-          console.log(e.candidate);
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          icecandidates.push(event.candidate);
         } else {
-          socket.emit('setOfferCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
+          console.log('sending icecandidates', icecandidates);
+          socket.emit('setOfferCandidates', { id: currentParty, candidates: icecandidates });
         }
       };
 
-      pc.ontrack = (e) => {
-        console.log('ontrack');
-        // e.streams[0].getTracks().forEach((t) => {
-        //   remoteStream.addTrack(t);
-        // });
-
-        if (remoteVideoRef.current) {
-          setLoading(false);
-          remoteVideoRef.current!.srcObject = e.streams[0];
-        }
-        // remoteVideoRef.current?.srcObject = e.streams[0];
-      };
-
-      // socket.on('onAnswer', async (res: any) => {
-      //   if (!pc.currentRemoteDescription && res) {
-      //     const answerDescription = new RTCSessionDescription(res);
-      //     await pc.setRemoteDescription(answerDescription);
-
-      //     console.log('answerDescription', pc.remoteDescription, res);
-      //   }
-      // });
-
-      if (localVideoRef.current) {
-        localVideoRef.current!.srcObject = localStream;
-      }
+      pc.createOffer()
+        .then((resOffer: any) => pc.setLocalDescription(resOffer))
+        .then(() => {
+          socket.emit('call', { pid: currentParty, offer: pc.localDescription }, (res: any) => {
+            console.log('offer success');
+          });
+        });
     }
-    setRef();
-
     return () => {};
-  }, [currentParty._id]);
+  }, [currentParty, localStream]);
 
   return (
     <div className="h-full w-full bg-black relative flex justify-center items-center text-white">

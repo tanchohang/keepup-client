@@ -1,73 +1,91 @@
 import { useEffect, useRef, useState } from 'react';
-import { getLocalStream, PeerConnection as pc } from '../../services/webrtc.service';
+import { PeerConnection as pc } from '../../services/webrtc.service';
 import { hangup, socket } from '../../services/socket.service';
 import { Phone, PhoneOff } from 'lucide-react';
 import { CallControls } from './call-controls';
-import useAuth, { AuthUser } from '../../context/auth.context';
 
 interface Props {
   handleCancelVideoCall: () => void;
   currentParty: any;
+  offer: any;
+  iceCandidates: any[];
 }
-export const IncommingCall = ({ handleCancelVideoCall, currentParty }: Props) => {
+export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceCandidates }: Props) => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const icecandidates: RTCIceCandidate[] = [];
-
-  let localStream: MediaStream;
-  let remoteStream: MediaStream;
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
-    async function setRef() {
-      localStream = await getLocalStream();
-      localStream.getTracks().forEach((t) => {
-        pc.addTrack(t, localStream);
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        setLocalStream(stream);
+      })
+      .catch((error) => {
+        console.log('Error accessing media devices:', error);
       });
-      pc.onicecandidate = (e) => {
-        if (e.candidate) {
-          icecandidates.push(e.candidate);
-        } else {
-          socket.emit('setAnswerCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
-        }
+  }, []);
+
+  useEffect(() => {
+    if (localStream) {
+      pc.ontrack = (event) => {
+        console.log('Received remote stream:', event.streams);
+        setRemoteStream(event.streams[0]);
+        remoteVideoRef.current!.srcObject = remoteStream;
       };
-      pc.ontrack = (e) => {
-        e.streams[0].getTracks().forEach((t) => {
-          remoteStream.addTrack(t);
-        });
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current!.srcObject = remoteStream;
-        }
-      };
-      if (remoteVideoRef.current) {
+
+      if (localVideoRef.current) {
         localVideoRef.current!.srcObject = localStream;
       }
     }
-    setRef();
     return () => {};
-  });
+  }),
+    [currentParty, offer, localStream];
 
   async function handleAnswerCall() {
-    // pc.onicegatheringstatechange = (e: any) => {
-    //   let connection = e.target;
-    //   switch (connection.iceGatheringState) {
-    //     case 'gathering':
-    //       /* collection of candidates has begun */
-    //       break;
-    //     case 'complete':
-    //       /* collection of candidates is finished */
-    //       socket.emit('setAnswerCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
+    console.log('handleAnswerCall');
+    localStream!.getTracks().forEach((track) => {
+      pc.addTrack(track);
+    });
+    let icecandidateArr: RTCIceCandidate[] = [];
 
-    //       break;
-    //   }
-    // };
-    pc.createAnswer()
-      .then((answer) => pc.setLocalDescription(answer))
-      .then(() => {
-        socket.emit('setAnswer', { id: currentParty._id, answer: pc.localDescription }, (res: any) => {
-          setLoading(false);
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        icecandidateArr.push(event.candidate);
+      } else {
+        console.log('sendicecandidate', icecandidateArr);
+        socket.emit('setAnswerCandidates', { id: currentParty, candidates: icecandidateArr });
+      }
+    };
+
+    pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
+      console.log('Successfully set offer description');
+      pc.createAnswer()
+        .then((answer) => pc.setLocalDescription(answer))
+        .then(() => {
+          if (pc.remoteDescription && pc.localDescription && iceCandidates.length > 0) {
+            console.log('adding candidates');
+
+            iceCandidates.forEach((candidate) => {
+              pc.addIceCandidate(candidate)
+                .then(() => {
+                  'icecandidate added successfully';
+                })
+                .catch((error) => {
+                  console.error('Error adding ICE candidate:', error);
+                });
+            });
+          }
+          socket.emit('setAnswer', { id: currentParty, answer: pc.localDescription }, (res: any) => {
+            setLoading(false);
+          });
+        })
+        .catch((err) => {
+          console.log('error creating answer', err);
         });
-      });
+    });
   }
 
   return (

@@ -20,9 +20,9 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   const [messages, setMessages] = useState<any>([]);
   const [isOutgoing, setIsOutgoing] = useState<boolean>(false);
   const [videoCall, setVideoCall] = useState<boolean>(false);
-  const { setPeerCon } = useChatStore();
-  const peerRef = useRef();
   const queryClient = useQueryClient();
+  const [offer, setOffer] = useState(null);
+  const [iceCandidates, setIceCandidates] = useState<any>([]);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: [messagesEndpoint, currentParty?._id],
@@ -38,9 +38,6 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
 
   useEffect(() => {
     socket.connect();
-
-    useChatStore.subscribe((state) => (peerRef.current = state.peerCon));
-
     return () => {
       socket.disconnect();
     };
@@ -49,77 +46,38 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
   useEffect(() => {
     joinParty(currentParty?._id);
 
+    socket.on('incomingCall', ({ peer, offer }: any) => {
+      setVideoCall(true);
+      setIsOutgoing(false);
+      setOffer(offer);
+      console.log('Received call from client:');
+    });
+
+    socket.on('onAnswerIceCandidates', (candidates: any[]) => {
+      console.log('Received ICE candidate');
+      setIceCandidates(candidates);
+    });
+    socket.on('onOfferIceCandidates', (candidates: any[]) => {
+      console.log('Received ICE candidate');
+      setIceCandidates(candidates);
+    });
+
     socket.on('broadcastParty', (data: any) => {
       queryClient.invalidateQueries([messagesEndpoint, currentParty._id]);
-    });
 
-    socket.on('incomingCall', async (res: any) => {
-      if (!pc.currentRemoteDescription && res) {
-        await pc.setRemoteDescription(new RTCSessionDescription(res.offer));
-        console.log('offerDescription', pc.remoteDescription);
-
-        setVideoCall(true);
-        setIsOutgoing(false);
-      }
-    });
-    socket.on('onOfferCandidates', (res: Array<any>) => {
-      console.log('onOfferCandidates', res);
-      res.forEach((c: any) => {
-        const candidate = new RTCIceCandidate(c);
-        pc.addIceCandidate(candidate);
-      });
-    });
-    socket.on('onAnswer', async (res: any) => {
-      if (!pc.currentRemoteDescription && res) {
-        await pc.setRemoteDescription(new RTCSessionDescription(res));
-        console.log('answerDescription', pc.remoteDescription);
-      }
-    });
-
-    socket.on('onAnswerCandidates', (res: Array<any>) => {
-      console.log('onAnswerCandidates', res);
-      res.forEach((c: any) => {
-        const candidate = new RTCIceCandidate(c);
-        pc.addIceCandidate(candidate);
-      });
+      //WEBRTC
     });
   }, [currentParty]);
 
   async function VideoCallHandler() {
-    // pc.onicegatheringstatechange = (e: any) => {
-    //   let connection = e.target;
-    //   switch (connection.iceGatheringState) {
-    //     case 'gathering':
-    //       /* collection of candidates has begun */
-
-    //       break;
-    //     case 'complete':
-    //       /* collection of candidates is finished */
-    //       console.log('complete');
-    //       socket.emit('setOfferCandidates', { id: currentParty._id, candidates: icecandidates }, (res: any) => {});
-
-    //       break;
-    //   }
-    // };
-    pc.createOffer()
-      .then((offer) => pc.setLocalDescription(offer))
-      .then(() => {
-        socket.emit('call', { pid: currentParty._id, offer: pc.localDescription }, (res: any) => {});
-      });
     setIsOutgoing(true);
     setVideoCall(true);
   }
 
   function cancelVideoCallHandler(): void {
-    // localStream.getTracks().forEach((track) => {
-    //   if (track.enabled) {
-    //     track.stop();
-    //     track.enabled = false;
-    //   }
-    // });
-
     setIsOutgoing(false);
     setVideoCall(false);
+    socket.emit('removePeer', { id: currentParty._id });
   }
 
   if (!currentParty) return <span>Create a Chat Group</span>;
@@ -136,11 +94,16 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
       </section>
 
       {videoCall && (
-        <section className="absolute inset-0">
+        <section className="absolute inset-0 bg-black">
           {isOutgoing ? (
-            <OutgoingCall handleCancelVideoCall={cancelVideoCallHandler} currentParty={currentParty} />
+            <OutgoingCall currentParty={currentParty._id} handleCancelVideoCall={cancelVideoCallHandler} iceCandidates={iceCandidates} />
           ) : (
-            <IncommingCall handleCancelVideoCall={cancelVideoCallHandler} currentParty={currentParty} />
+            <IncommingCall
+              currentParty={currentParty._id}
+              handleCancelVideoCall={cancelVideoCallHandler}
+              offer={offer}
+              iceCandidates={iceCandidates}
+            />
           )}
         </section>
       )}
