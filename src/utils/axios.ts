@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-const baseAPIURL = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'https://keepup.tanchohang.dev/api';
+const baseAPIURL = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : 'http://localhost/api';
 
 export const authEndpoint = 'auth';
 export const usersEndpoint = 'users';
