@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-const baseAPIURL = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : '/api';
+const baseAPIURL = import.meta.env.MODE === 'development' ? 'http://localhost:3000' : import.meta.env.VITE_API_URL;
 
 export const authEndpoint = 'auth';
 export const usersEndpoint = 'users';
