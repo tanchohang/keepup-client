@@ -16,7 +16,7 @@
 // };
 
 export const getLocalStream = async () => {
-  return await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+  return await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
 };
 
 export const PeerConnection = new RTCPeerConnection({
