@@ -1,13 +1,23 @@
 import { io } from 'socket.io-client';
 
-export const socket = io({
-  path: '/ws',
-  autoConnect: false,
-  transports: ['websocket'],
-  auth(cb) {
-    cb({ token: sessionStorage.getItem('accessToken') });
-  },
-});
+export const socket =
+  import.meta.env.MODE == 'development'
+    ? io('http://localhost:3000', {
+        path: '/ws',
+        autoConnect: false,
+        transports: ['websocket'],
+        auth(cb) {
+          cb({ token: sessionStorage.getItem('accessToken') });
+        },
+      })
+    : io({
+        path: '/ws',
+        autoConnect: false,
+        transports: ['websocket'],
+        auth(cb) {
+          cb({ token: sessionStorage.getItem('accessToken') });
+        },
+      });
 
 //Lifecycle Events
 
