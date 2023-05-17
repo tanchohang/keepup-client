@@ -29,9 +29,5 @@ RUN yarn build \
     && chown -R appuser:appuser .
 
 
-# Expose the listening port
-EXPOSE 5173
 
-
-
-CMD [  "yarn", "preview" ]
+CMD [  "yarn", "dev" ]
