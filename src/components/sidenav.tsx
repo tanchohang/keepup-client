@@ -22,6 +22,7 @@ export const Sidenav = () => {
           onClick={async () => {
             if (await logout()) {
               setAuth(null);
+              window.location.reload();
             }
           }}
         >

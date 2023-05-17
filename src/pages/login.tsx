@@ -28,7 +28,7 @@ const Login = () => {
           email: resData.email,
           username: resData.username,
           fullname: resData.fullname,
-          accessToken: resData.accessToken,
+          accessToken: resData.access_token,
           circle: resData.circle,
           online: resData.online,
         };
@@ -37,12 +37,16 @@ const Login = () => {
         localStorage.setItem('token', resData.refresh_token);
         sessionStorage.setItem('accessToken', resData.access_token);
 
+        console.log('location');
+
         if (location.state?.from) {
+          console.log('location');
           navigate(location.state?.from?.pathname || '/', { replace: true });
         }
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        console.log(error);
         Array.isArray(error.response?.data.message) ? setLoginErrors(error.response?.data.message) : setLoginErrors([error.response?.data.message]);
       }
     }
