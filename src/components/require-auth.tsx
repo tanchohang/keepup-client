@@ -8,13 +8,6 @@ const RequireAuth = () => {
 
   const refreshToken = localStorage.getItem('token');
 
-  // useEffect(() => {
-  //   const refreshToken = localStorage.getItem('token');
-  //   if ( auth) {
-  //     console.log(refreshToken, auth);
-  //   }
-  // }, []);
-
   return refreshToken ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
 };
 export default RequireAuth;

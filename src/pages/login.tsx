@@ -13,7 +13,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const { setAuth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [loginErrors, setLoginErrors] = useState<string[]>([]);
@@ -37,11 +37,10 @@ const Login = () => {
         localStorage.setItem('token', resData.refresh_token);
         sessionStorage.setItem('accessToken', resData.access_token);
 
-        console.log('location');
-
         if (location.state?.from) {
-          console.log('location');
           navigate(location.state?.from?.pathname || '/', { replace: true });
+        } else {
+          auth && navigate('/' + auth?.username);
         }
       }
     } catch (error) {

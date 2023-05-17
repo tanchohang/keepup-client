@@ -16,11 +16,7 @@ const PersistLogin = (props: Props) => {
       try {
         const { data } = await refreshAccessToken();
         const { id, username, email, fullname, accessToken, circle, online } = data;
-        console.log('getting access token');
-
         setAuth({ id, username, email, fullname, accessToken, circle, online } as AuthUser);
-
-        setIsLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -28,6 +24,6 @@ const PersistLogin = (props: Props) => {
     refreshToken ? getAccessToken() : redirect('/login');
   }, []);
 
-  return isLoading ? <Navigate to="/login" state={{ from: location }} replace /> : <Outlet />;
+  return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
 };
 export default PersistLogin;

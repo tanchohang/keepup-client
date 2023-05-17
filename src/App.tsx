@@ -24,31 +24,34 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Root />}>
         <Route index element={<Navigate to={'/login'} replace />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<Signup />} />
+
+        <Route element={<UnAuthorized />}>
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+        </Route>
         <Route element={<RequireAuth />}>
-          {/* <Route element={<PersistLogin />}> */}
-          <Route
-            path=":id"
-            element={
-              <ChatContextProvider>
-                <AuthLayout />
-              </ChatContextProvider>
-            }
-          >
-            <Route index element={<Navigate to={'chats'} replace />} />
-            <Route path="friends" element={<Friends />} />
-            <Route path="activities" element={<Activities />} />
-            <Route path="account" element={<Account />} />
-            <Route path="events" element={<Event />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="setting" element={<Setting />} />
-            <Route path="chats" element={<Chat />} />
-            <Route path="requests" element={<Requests />} />
+          <Route element={<PersistLogin />}>
+            <Route
+              path=":id"
+              element={
+                <ChatContextProvider>
+                  <AuthLayout />
+                </ChatContextProvider>
+              }
+            >
+              <Route index element={<Navigate to={'chats'} replace />} />
+              <Route path="friends" element={<Friends />} />
+              <Route path="activities" element={<Activities />} />
+              <Route path="account" element={<Account />} />
+              <Route path="events" element={<Event />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="setting" element={<Setting />} />
+              <Route path="chats" element={<Chat />} />
+              <Route path="requests" element={<Requests />} />
+            </Route>
           </Route>
         </Route>
       </Route>
-      // </Route>
     )
   );
   return (
