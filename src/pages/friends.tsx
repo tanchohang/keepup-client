@@ -58,7 +58,7 @@ export const Friends = (props: Props) => {
       </nav>
 
       <div className="relative h-[calc(100%-60px)]">
-        {data.users.length > 0 ? (
+        {data && data.users.length > 0 ? (
           <ul className="flex flex-col gap-5">
             {data?.users.map((user: any) => (
               <li key={user.id} className="flex">
