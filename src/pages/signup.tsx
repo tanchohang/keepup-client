@@ -24,7 +24,7 @@ const Signup = () => {
           username: resData.username,
           fullname: resData.fullname,
           email: resData.email,
-          accessToken: resData.accessToken,
+          accessToken: resData.access_token,
           id: resData.id,
           circle: resData.circle,
           online: resData.online,
@@ -47,11 +47,12 @@ const Signup = () => {
             <p>{errors.firstname && <span>Firstname is required</span>}</p>
             <p>{errors.lastname && <span>Lastname is required</span>}</p>
             <p>{errors.password && <span>Password is required</span>}</p>
-            {serverErrors.map((e) => (
-              <p key={e}>
-                <span>{e}</span>
-              </p>
-            ))}
+            {serverErrors &&
+              serverErrors.map((e) => (
+                <p key={e}>
+                  <span>{e}</span>
+                </p>
+              ))}
           </div>
         )}
 
