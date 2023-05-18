@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 export const socket =
-  import.meta.env.MODE == 'development'
+  import.meta.env.VITE_MODE === 'development'
     ? io('http://localhost:3000', {
         path: '/ws',
         autoConnect: false,
