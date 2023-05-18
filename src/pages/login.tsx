@@ -40,7 +40,9 @@ const Login = () => {
         if (location.state?.from) {
           navigate(location.state?.from?.pathname || '/', { replace: true });
         } else {
-          auth && navigate('/' + auth?.username);
+          if (auth?.username) {
+            navigate('/' + auth.username, { replace: true });
+          }
         }
       }
     } catch (error) {
