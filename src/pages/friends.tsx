@@ -21,7 +21,7 @@ export const Friends = (props: Props) => {
       return await addToCircle(email, auth?.circle as string);
     },
     onSuccess() {
-      // queryClient.refetchQueries([circlesEndpoint]);
+      queryClient.refetchQueries([circlesEndpoint]);
     },
   });
 
