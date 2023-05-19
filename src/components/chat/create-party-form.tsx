@@ -22,6 +22,7 @@ export const CreatePartyForm = ({ onCancel, ...props }: Props) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries([partiesEndpoint]);
+      onCancel();
     },
   });
 
