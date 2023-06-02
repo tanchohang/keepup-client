@@ -31,7 +31,8 @@ export const updateParty = async (id: string, name: string) => {
 };
 
 export const deleteParty = async (id: string) => {
-  const response = await keepupApiAxiosInstance(partiesEndpoint).delete(id);
+  console.log(id);
+  const response = await keepupApiAxiosInstance(partiesEndpoint).delete('/' + id);
   return response;
 };
 
