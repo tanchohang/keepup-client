@@ -100,7 +100,13 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
             <button
               className="rounded-full p-2 outline outline-1 bg-red-400"
               onClick={() => {
-                // TODO:: hangup()
+                if (localStream) {
+                  console.log('Cancelling');
+                  localStream.getTracks().forEach((track) => {
+                    track.enabled = false;
+                    track.stop();
+                  });
+                }
 
                 handleCancelVideoCall();
               }}
@@ -118,6 +124,8 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
           <video className="w-[200px] h-[150px] bg-black outline outline-1" autoPlay playsInline ref={localVideoRef} />
           <CallControls
             handleCancelVideoCall={() => {
+              console.log('Cancelling');
+
               localStream!.getTracks().forEach((track) => {
                 if (track.enabled) {
                   track.stop();
