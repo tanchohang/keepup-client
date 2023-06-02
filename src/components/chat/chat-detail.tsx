@@ -1,16 +1,16 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Camera, ChevronLeft, Mic, MoreVertical, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
+import { Camera, ChevronLeft, Mic, Phone, PlusCircle, Send, VideoIcon } from 'lucide-react';
 import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { messagesEndpoint } from '../../utils/axios';
 import { readAllMessage } from '../../services/message.service';
+import * as partyService from '../../services/party.service';
 import useAuth from '../../context/auth.context';
 import { joinParty, sendMessage, socket, typing } from '../../services/socket.service';
 import { IsTyping } from './is-typing';
 import { OutgoingCall } from './outgoing-call';
 import { PeerConnection as pc } from '../../services/webrtc.service';
 import { IncommingCall } from './incoming-call';
-import { AuthUser } from '../../context/auth.context';
-import { useChatStore } from '../../store/chatStore';
+import { ChatDropdown } from './chat-dropdown';
 
 interface Props {
   handleShowDetails: () => void;
@@ -111,13 +111,25 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
     socket.emit('removePeer', { id: currentParty._id });
   }
 
+  async function deletePartyHandler() {
+    await partyService.deleteParty(currentParty._id);
+  }
+
+  async function leavePartyHandler() {}
+
   if (!currentParty) return <span>Create a Chat Group</span>;
   if (isLoading) return <span>Loading....messages....</span>;
   if (isError) return <span>Error....messages.....</span>;
 
   return (
     <div className="flex flex-col bg-white md:h-screen h-full relative">
-      <ChatDetailHeader handleShowDetails={handleShowDetails} currentParty={currentParty} handleVideoCall={VideoCallHandler} />
+      <ChatDetailHeader
+        handleShowDetails={handleShowDetails}
+        currentParty={currentParty}
+        handleVideoCall={VideoCallHandler}
+        handleDeleteParty={deletePartyHandler}
+        handleLeaveParty={leavePartyHandler}
+      />
 
       <section className="flex flex-col h-full overflow-auto">
         <ChatBody messages={messages} currentParty={currentParty} />
@@ -151,9 +163,13 @@ const ChatDetailHeader = ({
   handleShowDetails,
   currentParty,
   handleVideoCall,
+  handleDeleteParty,
+  handleLeaveParty,
 }: {
   handleShowDetails: () => void;
   handleVideoCall: () => void;
+  handleDeleteParty: () => void;
+  handleLeaveParty: () => void;
   currentParty: any;
 }) => {
   return (
@@ -173,9 +189,7 @@ const ChatDetailHeader = ({
         <button onClick={handleVideoCall}>
           <VideoIcon size={30} className="fill-white stroke-white" />
         </button>
-        <button>
-          <MoreVertical size={30} className="fill-white stroke-white" />
-        </button>
+        <ChatDropdown deleteParty={handleDeleteParty} leaveParty={handleLeaveParty} />
       </div>
     </div>
   );
