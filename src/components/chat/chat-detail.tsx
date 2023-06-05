@@ -57,7 +57,8 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
     });
 
     socket.on('broadcastParty', (data: any) => {
-      queryClient.invalidateQueries([messagesEndpoint, currentParty._id]);
+      console.log(data);
+      queryClient.invalidateQueries([messagesEndpoint]);
 
       //WEBRTC
     });
