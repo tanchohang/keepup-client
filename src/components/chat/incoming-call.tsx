@@ -33,6 +33,15 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
         localVideoRef.current!.srcObject = localStream;
       }
     }
+    socket.on('hungup', (data: any) => {
+      if (localStream) {
+        console.log('Cancelling');
+        localStream.getTracks().forEach((track) => {
+          track.enabled = false;
+          track.stop();
+        });
+      }
+    });
     return () => {};
   }),
     [currentParty, offer, localStream, remoteStream];
@@ -40,7 +49,7 @@ export const IncommingCall = ({ handleCancelVideoCall, currentParty, offer, iceC
   async function handleAnswerCall() {
     console.log('handleAnswerCall');
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia({ video: true, audio: true })
       .then((localStream) => {
         setLocalStream(localStream);
         localStream!.getTracks().forEach((track) => {

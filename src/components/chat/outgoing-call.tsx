@@ -19,9 +19,16 @@ export const OutgoingCall = ({ handleCancelVideoCall, currentParty, iceCandidate
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const ansref = useRef<any>(null);
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
+    socket.on('hungup', (data: any) => {
+      if (localStream) {
+        console.log('Cancelling');
+        localStream.getTracks().forEach((track) => {
+          track.enabled = false;
+          track.stop();
+        });
+      }
+    });
     socket.on('onAnswer', (answer) => {
       console.log('Received answer from client:', pc.signalingState);
 

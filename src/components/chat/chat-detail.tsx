@@ -62,11 +62,23 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
 
       //WEBRTC
     });
+
+    socket.on('hungup', (data: any) => {
+      if (localStream) {
+        console.log('Cancelling');
+        localStream.getTracks().forEach((track) => {
+          track.enabled = false;
+          track.stop();
+        });
+      }
+      setIsOutgoing(false);
+      setVideoCall(false);
+    });
   }, [currentParty]);
 
   async function VideoCallHandler() {
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia({ video: true, audio: true })
       .then((localStream) => {
         setLocalStream(localStream);
         let icecandidates: RTCIceCandidate[] = [];
@@ -109,7 +121,7 @@ const ChatDetail = ({ handleShowDetails, currentParty }: Props) => {
     }
     setIsOutgoing(false);
     setVideoCall(false);
-    socket.emit('removePeer', { id: currentParty._id });
+    socket.emit('hangup', currentParty._id);
   }
 
   async function deletePartyHandler() {
