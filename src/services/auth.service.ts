@@ -1,7 +1,7 @@
 import { keepupApiAxiosInstance, authEndpoint } from '../utils/axios';
 
 export const login = async (username: string, password: string) => {
-  const response = await keepupApiAxiosInstance(authEndpoint).post('/login', { username, password });
+  const response = await keepupApiAxiosInstance(authEndpoint).post('/login', { username: username.toLowerCase(), password });
   return response;
 };
 
